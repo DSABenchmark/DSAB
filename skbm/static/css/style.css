@@ -1,0 +1,40 @@
+html {
+	font-family: sans-serif;
+}
+
+#header-nav {
+	background-color: lightgray;
+}
+
+.navbar-brand a:hover, .navbar-brand a:focus  {
+	text-decoration: none;
+}
+
+header {
+	margin-bottom: 50px;
+}
+
+section {
+	background-color: #eee;
+	margin-bottom: 50px;
+	padding-bottom: 30px;
+}
+section div.blockTitle {
+	padding-top: 20px;
+	padding-bottom: 35px;
+}
+section#setup .dropdown{
+	margin-left: 30%
+}
+section#grid-search .argument {
+	margin-bottom: 25px;
+}
+section#grid-search .argument label {
+	font-size: 0.8em;
+}
+section#grid-search .disableButton button {
+	margin-top: 24%
+}
+body > div.container {
+	margin-bottom: 50px;
+}

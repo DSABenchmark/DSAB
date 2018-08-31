@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
+    <title>PKU Sketch Benchmark</title>
+  </head>
+  <body>
+    <header>
+      <nav id='header-nav' class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <div class="navbar-brand">
+              <a href="index.html"><h1>PKU Sketch Benchmark</h1></a>
+            </div><!-- .navbar-brand -->
+          </div><!-- .navbar-header -->
+        </div><!-- .container -->
+      </nav><!-- #header-nav -->
+    </header>
+    <section id="setup" class="container">
+      <div class="blockTitle"><h2 class="text-center">Basic Setup</h2></div>
+      <div id="dataset-row" class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <h3 class="text-center">Dataset</h3>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <div class="dropdown">
+            <a id="dataset-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-dataset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Please select a dataset
+            </a>
+            <div id="dataset-dropdown" class="dropdown-menu" aria-labelledby="btn-dataset">
+              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">generate dataset</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div id="sketch-row" class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <h3 class="text-center">Sketch</h3>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <div class="dropdown">
+            <a id="sketch-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-sketch" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Please select a sketch
+            </a>
+            <div id="sketch-dropdown" class="dropdown-menu" aria-labelledby="btn-sketch">
+              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">upload sketch</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div id="task-row" class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <h3 class="text-center">Task</h3>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <div class="dropdown">
+            <a id="task-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-task" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Please select a task
+            </a>
+            <div id="task-dropdown" class="dropdown-menu" aria-labelledby="btn-task">
+              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="grid-search" class="container">
+      <div class="blockTitle"><h2 class="text-center">Grid Search Experiment</h2></div>
+      <div class="argument row">
+        <div class="col-lg-10 col-md-10 col-sm-10">
+          <form class="row">
+            <div id="arg1" class="form-group col-lg-3 col-md-6 col-sm-6 mx-auto">
+              <label for="arg1Name">Argument Name</label>
+              <input type="text" class="form-control" id="arg1Name">
+            </div>
+            <div class="form-group col-lg-3 col-md-6 col-sm-6 mx-auto">
+              <label for="arg1type">Argument Type</label>
+              <input type="text" class="form-control" id="arg1type" placeholder="float">
+              <small class="form-text text-muted">only int, float, or text available</small>
+            </div>
+            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
+              <label for="arg1from">From</label>
+              <input type="text" class="form-control" id="arg1from">
+            </div>
+            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
+              <label for="arg1to">To</label>
+              <input type="text" class="form-control" id="arg1to">
+            </div>
+            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
+              <label for="arg1step">Step</label>
+              <input type="text" class="form-control" id="arg1step">
+            </div>
+          </form>
+        </div>
+        <div class="disableButton col-lg-2 col-md-2 col-sm-2">
+          <button type="button" class="btn btn-secondary">Disable</button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-12"><button type="button" class="btn btn-secondary btn-lg btn-block">Add an argument</button></div>
+      </div>
+    </section>
+    <div class="container"><button id="submit-button" type="button" class="btn btn-primary btn-lg btn-block">Submit!</button></div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='js/index.js')}}"></script>
+    
+  </body>
+</html>
