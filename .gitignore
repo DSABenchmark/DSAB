@@ -4,6 +4,7 @@ __pycache__/
 *.o
 .DS_Store
 sftp-config.json
+test/
 
 venv/
 instance/
