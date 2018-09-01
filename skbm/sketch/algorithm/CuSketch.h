@@ -1,8 +1,8 @@
 #ifndef CU_SKETCH_H
 #define CU_SKETCH_H
-#include "SketchBase.h"
-#include "factor.h"
-#include "hash/hashfunction.h"
+#include "../SketchBase.h"
+#include "../factor.h"
+#include "../hash/hashfunction.h"
 #include<string>
 #include<iostream>
 #include<memory.h>
