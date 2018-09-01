@@ -1,5 +1,5 @@
-#ifndef CM_SKETCH_H
-#define CM_SKETCH_H
+#ifndef CU_SKETCH_H
+#define CU_SKETCH_H
 #include "SketchBase.h"
 #include "factor.h"
 #include "hash/hashfunction.h"
@@ -17,7 +17,7 @@ virtual int frequencyQuery(const char *str, const int & len) = 0;
 virtual int topkQuery(const int & k) = 0;
 virtual void reset() = 0;//reset sketch to the initial state
 */
-class CmSketch: public SketchBase {
+class CuSketch: public SketchBase {
 private:
     int hash_num;
     int counter_per_array;
@@ -26,9 +26,9 @@ private:
     int **data;
 public:
     using SketchBase::sketch_name;
-    CmSketch()
+    CuSketch()
     {
-        sketch_name =  "NEWcmsketch";
+        sketch_name =  "CuSketch";
     }
     void parameterSet(const std::string& parameterName, double  parameterValue)
     {
@@ -65,10 +65,18 @@ public:
     }
     void Insert(const char *str, const int & len)
     {
-        for (int i = 0; i < hash_num; ++i)
+        int idx = 0;
+        int min =data[0][hash[0].Run(str, len) % counter_per_array];
+        for (int i = 1; i < hash_num; ++i)
         {
-            ++data[i][hash[i].Run(str, len) % counter_per_array];
+            int curValue = data[i][hash[i].Run(str, len) % counter_per_array];
+            if(curValue<min)
+            {
+                min  = curValue;
+                idx = i;
+            }
         }
+        ++data[idx][hash[idx].Run(str, len) % counter_per_array];
     }
     int frequencyQuery(const char *str, const int & len)
     {
@@ -90,7 +98,7 @@ public:
             memset(data[i],0,sizeof(int)*counter_per_array);
         }
     }
-    ~CmSketch()
+    ~CuSketch()
     {
         for (int i; i<hash_num; ++i)
         {
@@ -99,5 +107,5 @@ public:
         delete [] data;
     }
 };
-REGISTER(CmSketch);
+REGISTER(CuSketch);
 #endif

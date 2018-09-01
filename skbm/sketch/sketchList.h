@@ -1,4 +1,5 @@
 #ifndef SKETCHLIST_H
 #define SKETCHLIST_H
-#include "../sketch/CmSketch.h"
+#include "CmSketch.h"
+#include "CuSketch.h"
 #endif

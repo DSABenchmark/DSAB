@@ -1,4 +1,4 @@
 #ifndef HASHFUNCTION_H
 #define HASHFUNCTION_H
-#include "../hash/BOBHash.h"
+#include "BOBHash.h"
 #endif
