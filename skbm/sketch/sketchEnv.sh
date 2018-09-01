@@ -1,4 +1,5 @@
 export sketch_dir="/home/ubuntu/pku-sketch-benchmark/skbm/sketch"
+mkdir $sketch_dir/../../experiment/info $sketch_dir/../../experiment/output
 
 # rewrite sketchList.h file
 echo "#ifndef SKETCHLIST_H" > $sketch_dir/sketchList.h
