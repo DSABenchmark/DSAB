@@ -14,6 +14,10 @@ bp = Blueprint('skbm', __name__, url_prefix='/skbm')
 def index():
     return render_template('index.html')
 
+@bp.route('/addSketch.html')
+def addSketch():
+    return render_template('addSketch.html')
+
 @bp.route('/api', methods=['GET','POST'])
 def api():
     arg_get = request.args.get('get','');
