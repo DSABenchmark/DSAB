@@ -23,7 +23,123 @@
         </div><!-- .container -->
       </nav><!-- #header-nav -->
     </header>
-    <section id="setup" class="container">
+
+    <div id="dataset-setup" class="container">
+      <h2 class="text-center">Please Select One or More Datasets</h2>
+      <div class="row">
+        <div class="col-md-6"><button type="button" class="btn btn-light btn-lg btn-block">kosarak.dat</button></div>
+        <div class="col-md-6"><button type="button" class="btn btn-light btn-lg btn-block">xxx.dat</button></div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-lg btn-block">Generate A Dataset</button>
+    </div>
+
+    <div id="grid-setup" class="container">
+      <h2 class="text-center">Grid Search Experiments</h2>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary">Add an argument</button>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sketch
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item">CmSketch</a>
+                <a class="dropdown-item">CuSketch</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item">Add Your Sketch</a>
+
+              </div>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Task
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item">freq</a>
+                <a class="dropdown-item">topk</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <form>
+            <div class="form-row">
+              <div class="col">
+                <input type="text" class="form-control-plaintext text-center" value="hash_num">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="From">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="To">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Step">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col">
+                <input type="text" class="form-control-plaintext text-center" value="bit_per_counter">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="From">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="To">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Step">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col">
+                <input type="text" class="form-control-plaintext text-center" value="counter_per_array">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="From">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="To">
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Step">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <hr>
+      <button type="button" class="btn btn-secondary btn-lg btn-block">Add an Experiment</button>
+    </div>
+
+    <div id="submit-container" class="container">
+      <button type="button" class="btn btn-primary btn-lg btn-block">Ready to Go!</button>
+    </div>
+
+<!-- 
+    <div id="mainContent" class="container-fluid">
+      <div class="row">
+        <section id="dataset-setup" class="col-md-12">
+          <h3 class="text-center">Please Select One or More Datasets</h3>
+          <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">kosarak.dat</a>
+          </div>
+          <button type="button" class="btn btn-secondary btn-lg btn-block">Generate A Dataset</button>
+        </section>
+      </div>
+      <div class="row">
+        <div class="col-md-12"><h3 class="text-center">Grid Search Setup</h3></div>
+        div.col
+      </div>
+    </div> -->
+
+
+
+
+
+
+    <!-- <section id="setup" class="container">
       <div class="blockTitle"><h2 class="text-center">Basic Setup</h2></div>
       <div id="dataset-row" class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
@@ -35,7 +151,6 @@
               Please select a dataset
             </a>
             <div id="dataset-dropdown" class="dropdown-menu" aria-labelledby="btn-dataset">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">generate dataset</a>
             </div>
@@ -53,7 +168,6 @@
               Please select a sketch
             </a>
             <div id="sketch-dropdown" class="dropdown-menu" aria-labelledby="btn-sketch">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">upload sketch</a>
             </div>
@@ -71,7 +185,6 @@
               Please select a task
             </a>
             <div id="task-dropdown" class="dropdown-menu" aria-labelledby="btn-task">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
             </div>
           </div>
         </div>
@@ -114,7 +227,7 @@
         <div class="col-12"><button type="button" class="btn btn-secondary btn-lg btn-block">Add an argument</button></div>
       </div>
     </section>
-    <div class="container"><button id="submit-button" type="button" class="btn btn-primary btn-lg btn-block">Submit!</button></div>
+    <div class="container"><button id="submit-button" type="button" class="btn btn-primary btn-lg btn-block">Submit!</button></div> -->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
