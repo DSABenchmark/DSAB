@@ -60,7 +60,7 @@ def init_existing_sketch():
     db.drop_collection('sketch_info')
     info = [
         {
-            'name': 'CMSketch',
+            'name': 'CmSketch',
             'path': osp.join(cfg.PATH.sketch_dir, 'CmSketch.h'),
             'params': [
                     {
