@@ -37,17 +37,17 @@ DSAB-builtin hashTable type:cuckoo_hashtable\
 HOW TO USE:
 define: cuckoo::CuckooHashing<key_len> ht;
 !!!MUST init: ht.init(capacity)
-bool insert(uint8_t * key, uint32_t val, int from_k = -1, int remained = 5)
-bool query(uint8_t * key, uint32_t & val)
-bool find(uint8_t * key)
-bool erase(uint8_t * key)
+bool insert(char * key, uint32_t val, int from_k = -1, int remained = 5)
+bool query(char * key, uint32_t & val)
+bool find(char * key)
+bool erase(char * key)
 */
 /*----builtin hashTable----*/
 
 /*----SketchBase virtual function must be finished----*/
 /*
 virtual ~SketchBase();
-virtual void parameterSet(const string& parameterName, double & parameterValue)=0;
+virtual void parameterSet(const string& parameterName, double  parameterValue)=0;
 virtual init() = 0;
 virtual void Insert(const char *str, const int & len) = 0;
 virtual int frequencyQuery(const char *str, const int & len) = 0;
@@ -62,7 +62,7 @@ private:
 	/*----optional according to your need----*/
 	typedef pair <string, int> KV;
 	typedef pair <int, string> VK;
-	VK heap*;
+	VK * heap;
 	int capacity;
 	int heap_element_num;
 	int mem_in_bytes;
@@ -115,7 +115,7 @@ public:
         /*constructed function MUST BT non-parameter!!!*/
         sketch_name =  "CountHeap";//please keep sketch_name the same as class name and .h file name
     }
-    void parameterSet(const std::string& parameterName, double & parameterValue)
+    void parameterSet(const std::string& parameterName, double  parameterValue)
     {
         /*MUST have this function even empty function body*/
 
@@ -159,7 +159,7 @@ public:
 			
 			hash[i].SetSeed(uint32_t(rand() % MAX_PRIME32));
 			hash_polar[i].SetSeed(uint32_t(rand() % MAX_PRIME32));
-			c_sketch = new int[w];
+			c_sketch[i] = new int[w];
 			memset(c_sketch[i], 0, sizeof(int)*w);
         }
         /*----optional according to your need----*/
@@ -172,8 +172,8 @@ public:
 		int ans[hash_num];
 
 		for (int i = 0; i < hash_num; ++i) {
-			int idx = hash[i]->run((char *)key, len) % w;
-			int polar = hash_polar[i]->run((char *)key, len) % 2;
+			int idx = hash[i].Run(str, len) % w;
+			int polar = hash_polar[i].Run(str, len) % 2;
 
 			c_sketch[i][idx] += polar ? 1 : -1;
 
@@ -193,7 +193,7 @@ public:
 		}
 		tmin = (tmin <= 1) ? 1 : tmin;
 
-		string str_key = string((const char *)key, len);
+		string str_key = string(str, len);
 		if (ht.find(str_key) != ht.end()) {
 			heap[ht[str_key]].first++;
 			heap_adjust_down(ht[str_key]);
@@ -214,7 +214,7 @@ public:
 		}
         /*----optional according to your need----*/
     }
-    int frequencyQuery(const char *str, const int & len)
+    int frequencyQuery(const char * str, const int & len)
     {
          /*MUST have this function DO NOT change function head and parameter type */
 
@@ -222,8 +222,8 @@ public:
 		int ans[hash_num];
 
 		for (int i = 0; i < hash_num; ++i) {
-			int idx = hash[i].run(key,len) % w;
-			int polar = hash_polar[i].run((char *)key, len) % 2;
+			int idx = hash[i].Run(str,len) % w;
+			int polar = hash_polar[i].Run(str, len) % 2;
 
 			int val = c_sketch[i][idx];
 
@@ -257,7 +257,7 @@ public:
 		sort(a, a + capacity);
 		int i;
 		for (i = 0; i < k && i < capacity; ++i) {
-			topkItem.pus_back(a[capacity - 1 - i].second);
+			topkItem.push_back(a[capacity - 1 - i].second);
 		
 		}
         return topkItem;
@@ -276,7 +276,7 @@ public:
 		heap_element_num = 0;
         /*----optional according to your need----*/
     }
-    ~CmSketch()
+    ~CountHeap()
     {
         /*MUST have this function */
 
@@ -284,8 +284,6 @@ public:
         for (int i; i<hash_num; ++i)
         {
             delete [] c_sketch[i];
-			delete hash[i];
-			delete hash_polar[i];
         }
         delete [] c_sketch;
         delete [] hash;

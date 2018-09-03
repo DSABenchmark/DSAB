@@ -32,10 +32,10 @@ DSAB-builtin hashTable type:cuckoo_hashtable\
 HOW TO USE: 
 define: cuckoo::CuckooHashing<key_len, capacity> ht;
 !!!MUST init: ht.init(capacity)
-bool insert(uint8_t * key, uint32_t val, int from_k = -1, int remained = 5)
-bool query(uint8_t * key, uint32_t & val)
-bool find(uint8_t * key)
-bool erase(uint8_t * key)
+bool insert(char * key, uint32_t val, int from_k = -1, int remained = 5)
+bool query(char * key, uint32_t & val)
+bool find(char * key)
+bool erase(char * key)
 */
 /*----builtin hashTable----*/
 
@@ -43,7 +43,7 @@ bool erase(uint8_t * key)
 /*----SketchBase virtual function must be finished----*/
 /*
 virtual ~SketchBase();
-virtual void parameterSet(const string& parameterName, double & parameterValue)=0;
+virtual void parameterSet(const string& parameterName, double  parameterValue)=0;
 virtual init() = 0;
 virtual void Insert(const char *str, const int & len) = 0;
 virtual int frequencyQuery(const char *str, const int & len) = 0;
@@ -52,8 +52,8 @@ virtual void reset() = 0;//reset sketch to the initial state
 */
 /*----SketchBase virtual function must be finished----*/
 
-bool cmp(const pair<string, uint32_t> a, const pair<string, uint32_t> b) {
-	return a.second > b.second;//×Ô¶¨ÒåµÄ±È½Ïº¯Êý
+bool CMHcmp(const pair<string, uint32_t> a, const pair<string, uint32_t> b) {
+	return a.second > b.second;
 }
 class CountMinHeap : public SketchBase {
 private:
@@ -61,7 +61,7 @@ private:
 	/*----optional according to your need----*/
 	int capacity;
 	int hash_num;
-	typedef pair <uint8_t[4], int> KV;
+	typedef pair <string, int> KV;
 	KV * heap;
 	int heap_element_num;
 	int mem_in_bytes;
@@ -84,7 +84,7 @@ private:
 			}
 			if (larger_one != i) {
 				swap(heap[i], heap[larger_one]);
-				swap(ht[heap[i].first], ht[heap[larger_one].first]);
+				swap(ht[heap[i].first.c_str()], ht[heap[larger_one].first.c_str()]);
 				heap_adjust_down(larger_one);
 			}
 			else {
@@ -99,7 +99,7 @@ private:
 				break;
 			}
 			swap(heap[i], heap[parent]);
-			swap(ht[heap[i].first], ht[heap[parent].first]);
+			swap(ht[heap[i].first.c_str()], ht[heap[parent].first.c_str()]);
 			i = parent;
 		}
 	}
@@ -111,7 +111,7 @@ public:
 		/*constructed function MUST BT non-parameter!!!*/
 		sketch_name = "CountMinHeap";//please keep sketch_name the same as class name and .h file name
 	}
-	void parameterSet(const std::string& parameterName, double & parameterValue)
+	void parameterSet(const std::string& parameterName, double  parameterValue)
 	{
 		/*MUST have this function even empty function body*/
 
@@ -163,44 +163,44 @@ public:
 
 		/*----optional according to your need----*/
 		int tmin = 1 << 30, ans = tmin;
-
 		for (int i = 0; i < hash_num; ++i) {
-			int idx = hash[i].run((char *)key, len) % w;
+			int idx = hash[i].Run(str, len) % w;
 			cm_sketch[i][idx]++;
 			int val = cm_sketch[i][idx];
 			ans = std::min(val, ans);
 		}
 
-		string str_key = string((const char *)key, len);
-		if (ht.find(key))
+		string str_key = string(str, len);
+		if (ht.find(str))
 		{
-			heap[ht[key]].second++;
-			heap_adjust_down(ht[key]);
+			heap[ht[str]].second++;
+			heap_adjust_down(ht[str]);
 		}
 		else if (heap_element_num < capacity) {
-			memcpy(heap[heap_element_num].first, key, len);
+			//memcpy(heap[heap_element_num].first, str, len);
+            heap[heap_element_num].first = str_key;
 			heap[heap_element_num].second = ans;
-			ht[key] = heap_element_num++;
+			ht[str] = heap_element_num++;
 			heap_adjust_up(heap_element_num - 1);
 		}
 		else if ( ans > heap[0].second) {
 			KV & kv = heap[0];
-			ht.erase(kv.first);
-			memcpy(kv.first, key, len);
+			ht.erase(kv.first.c_str());
+            kv.first = str_key;
 			kv.second = ans;
-			ht[key] = 0;
+			ht[str] = 0;
 			heap_adjust_down(0);
 		}
 		/*----optional according to your need----*/
 	}
-	int frequencyQuery(const char *str, const int & len)
+	int frequencyQuery(const char * str, const int & len)
 	{
 		/*MUST have this function DO NOT change function head and parameter type */
 
 		/*----optional according to your need----*/
 		int tmin = 1 << 30, ans = tmin;
 		for (int i = 0; i < hash_num; ++i) {
-			int idx = hash[i].run((char*)key, len) % w;
+			int idx = hash[i].Run(str, len) % w;
 			int val = cm_sketch[i][idx];
 			ans = std::min(val, ans);
 		}
@@ -215,12 +215,12 @@ public:
 		vector<string> topkItem;
 		vector<pair<string, uint32_t> > tmp;
 		for (int i = 0; i < capacity; ++i) {
-				tmp.emplace_back(make_pair(string((const char *)heap[i].first, 4), heap[i].second));
+				tmp.emplace_back(make_pair(heap[i].first, heap[i].second));
 		}
-		sort(tmp.begin(), tmp.end(), cmp);
+		sort(tmp.begin(), tmp.end(), CMHcmp);
 		for (int i = 0; i < k; ++i)
 		{
-			topkItem.push_back(tmp[i]);
+			topkItem.push_back(tmp[i].first);
 		}
 		return topkItem;
 		/*----optional according to your need----*/
@@ -237,13 +237,12 @@ public:
 		}
 		/*----optional according to your need----*/
 	}
-	~CmSketch()
+	~CountMinHeap()
 	{
 		/*MUST have this function */
 
 		/*----optional according to your need----*/
 		for (int i = 0; i < hash_num; ++i) {
-			delete [] hash[i];
 			delete [] cm_sketch[i];
 		}
 		delete [] hash;

@@ -1,4 +1,4 @@
-sketchList.h: 
+sketchList.h:
 	source sketchEnv.sh
 
 main.o: sketchList.h
