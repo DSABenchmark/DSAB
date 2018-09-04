@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, send_from_directory
 )
 from werkzeug.exceptions import abort
 
@@ -10,8 +10,13 @@ import json
 
 bp = Blueprint('skbm', __name__, url_prefix='/skbm')
 
+@bp.route('/test')
+def test():
+    return render_template('test.html')
+
 @bp.route('/index.html')
 def index():
+    # return send_from_directory('templates','index.html')
     return render_template('index.html')
 
 @bp.route('/addSketch.html')
@@ -24,15 +29,17 @@ def api():
     if arg_get:
         if arg_get == 'datasetList':
             db = get_db()
-            ret = []
-            for dct in db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0}}]):
-                ret.append(dct['name'])
+            # ret = []
+            # for dct in db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0}}]):
+            #     ret.append(dct['name'])
+            ret = list(db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0}}]))
             return json.dumps(ret)
         elif arg_get == 'sketchList':
             db = get_db()
-            ret = []
-            for dct in db.sketch_info.aggregate([{'$project': {'name': 1,'_id':0}}]):
-                ret.append(dct['name'])
+            # ret = []
+            # for dct in db.sketch_info.aggregate([{'$project': {'name': 1,'_id':0}}]):
+            #     ret.append(dct['name'])
+            ret = list(db.sketch_info.aggregate([{'$project': {'name': 1,'_id':0,'params': 1,'tasks': 1}}]))
             return json.dumps(ret)
         elif arg_get == 'taskList' and request.args.get('sketch',''):
             sketchName = request.args.get('sketch','')
@@ -48,10 +55,6 @@ def api():
 
     return 'NoNoNo...'
 
-@bp.route('/test')
-def test():
-    init_existing_dataset()
-    return str(get_db().dataset_info.find_one())
 
 
 def single_experiment(kwargs):

@@ -79,11 +79,28 @@ def init_existing_sketch():
                         'help': 'xxx',
                     },
                 ],
-            'tasks': ['freq', 'topk'],
+            'tasks': [
+                {
+                    'name': 'freq',
+                    'params': [],
+                },
+                {
+                    'name': 'topk',
+                    'params': [{
+                        'field': 'k',
+                        'type': 'int',
+                        'help': 'xxx',
+                    }],
+                },
+                {
+                    'name': 'speed',
+                    'params': [],
+                },
+            ],
         },
     ]
     db.sketch_info.insert_many(info);
-
+    print('Initiated existing sketches!')
 
 
 
