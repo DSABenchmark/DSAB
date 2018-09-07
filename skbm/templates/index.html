@@ -67,16 +67,16 @@
           <form>
             <div class="form-row" ng-repeat="param in experiment.params">
               <div class="col">
-                <input type="text" class="form-control-plaintext text-center" value="{{param.field}}" placeholder="Parameter">
+                <input type="text" class="form-control text-center" value="{{param.field}}" placeholder="Parameter" disabled>
               </div>
               <div class="col">
-                <input type="text" class="form-control" placeholder="From" ng-model="param.from">
+                <input type="value" class="form-control" placeholder="From" ng-model="param.from">
               </div>
               <div class="col">
-                <input type="text" class="form-control" placeholder="To" ng-model="param.to">
+                <input type="value" class="form-control" placeholder="To" ng-model="param.to">
               </div>
               <div class="col">
-                <input type="text" class="form-control" placeholder="Step" ng-model="param.step">
+                <input type="value" class="form-control" placeholder="Step" ng-model="param.step">
               </div>
             </div>
           </form>
@@ -90,6 +90,33 @@
     {%raw%}
     <div id="submit-container" class="container" ng-controller="submitController as sbc">
       <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()">Ready to Go!</button>
+    </div>
+    {%endraw%}
+
+    {%raw%}
+    <div id="graph-container" class="container" ng-controller="graphController as gc">
+      <form> <!-- ng-if="gc.result" -->
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Y axis</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
+            <option ng-repeat="yaxis in gc.result.yaxis">{{yaxis}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">X axis</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_xaxis" ng-if="var != gc.chosen_multilines">
+            <option ng-repeat="var in gc.result.variables">{{var}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Multi-lines</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_multilines">
+            <option ng-repeat="var in gc.result.variables" ng-if="var != gc.chosen_xaxis">{{var}}</option>
+          </select>
+        </div>
+      </form>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>
+      <button type="button" class="btn btn-link btn-lg btn-block"><a ng-href="{{gc.graphLink}}" target="_blank"><div>Get the graph!</div></a></button>
     </div>
     {%endraw%}
 

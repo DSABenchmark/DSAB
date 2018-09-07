@@ -64,8 +64,31 @@ hr {
 	margin-top: 0;
 }
 
-/*#grid-setup > div.row div:nth-child(2) {
+/*specific for addSketch.html*/
+#add-param-button {
 	margin-bottom: 20px;
-	background-color: #eee;
-	background
-}*/
+}
+#addSketch-container textarea {
+	height: 400px !important;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+#addSketch-container > form > div:nth-child(3) {
+	margin-top: 20px;
+}
+
+button > a {
+	text-decoration: none;
+	width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+

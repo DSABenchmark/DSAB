@@ -5,6 +5,7 @@ angular.module('SketchApp', [])
 .controller('datasetController', datasetController)
 .controller('expController', expController)
 .controller('submitController', submitController)
+.controller('graphController', graphController)
 .service('metaService', metaService)
 .service('requestService', requestService)
 .constant('baseURL', "http://188.131.137.105:8086/skbm/api");
@@ -57,9 +58,9 @@ function expController(requestService,metaService) {
 		ec.experimentList[experimentIdx].params = ec.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
 		for(var i in ec.experimentList[experimentIdx].params){
 			var param = ec.experimentList[experimentIdx].params[i];
-			param.from = 1;
-			param.to = 3;
-			param.step = 1;
+			param.from = "";
+			param.to = "";
+			param.step = "";
 		}
 	};
 
@@ -81,47 +82,98 @@ function submitController(requestService,metaService) {
 		// get all the experiments
 		// console.log(sbc.datasetList);
 		// console.log(sbc.experimentList);
-		var experiments = []
-		for(var i in sbc.datasetList){
-			var dataset = sbc.datasetList[i];
-			if(dataset.state){
-				console.log(dataset.name);
-				for(var j in sbc.experimentList){
-					var row = sbc.experimentList[j];
-					var params = row.params;
-					var steps = [];
-					var grids = []
-					var totSteps = 1;
-					for(var k=0;k<params.length;k++){
-						steps.push(0);
-						var param = params[k];
-						var tmp = parseInt((param.to-param.from)/param.step);
-						totSteps *= tmp+1;
-						grids.push(tmp);
-					}
-					while(totSteps>0){
-						totSteps--;
-						var arg = {
-									datasetName: dataset.name,
-									sketchName: row.sketchName,
-									taskName: row.taskName
-								};
-						for(var s in steps){
-							var param = params[s];
-							var v = steps[s] * param.step + param.from;
-							arg[param.field] = v;
-						}
-						experiments.push(arg);
-						incrementSteps(steps,grids);
-					}
+		// var experiments = []
+		// for(var i in sbc.datasetList){
+		// 	var dataset = sbc.datasetList[i];
+		// 	if(dataset.state){
+		// 		console.log(dataset.name);
+		// 		for(var j in sbc.experimentList){
+		// 			var row = sbc.experimentList[j];
+		// 			var params = row.params;
+		// 			var steps = [];
+		// 			var grids = []
+		// 			var totSteps = 1;
+		// 			for(var k=0;k<params.length;k++){
+		// 				steps.push(0);
+		// 				var param = params[k];
+		// 				var tmp = parseInt((param.to-param.from)/param.step);
+		// 				totSteps *= tmp+1;
+		// 				grids.push(tmp);
+		// 			}
+		// 			while(totSteps>0){
+		// 				totSteps--;
+		// 				var arg = {
+		// 							datasetName: dataset.name,
+		// 							sketchName: row.sketchName,
+		// 							taskName: row.taskName
+		// 						};
+		// 				for(var s in steps){
+		// 					var param = params[s];
+		// 					var v = steps[s] * param.step + param.from;
+		// 					arg[param.field] = v;
+		// 				}
+		// 				experiments.push(arg);
+		// 				incrementSteps(steps,grids);
+		// 			}
 
 					
-				}
-			}
+		// 		}
+		// 	}
+		// }
+		// console.log(experiments);
+		var dsList = [];
+		for(var i in sbc.datasetList) {
+			var dataset = sbc.datasetList[i];
+			if(dataset.state) dsList.push(dataset.name);
 		}
-		console.log(experiments);
+		// console.log(dsList);
+		var d = {
+			'flag': "experiment",
+			'datasetList': dsList,
+			'experimentList': sbc.experimentList
+		};
+		var promise = requestService.postExperiments(d);
+		promise.then(function(response){
+			metaService.setResult(response.data);
+		})
+		.catch(function(error){
+			console.log(error);
+		});
 	};
 }
+
+graphController.$inject = ['requestService','metaService'];
+function graphController(requestService,metaService){
+	var gc = this;
+
+	gc.result = metaService.getResult();
+
+	gc.chosen_yaxis = "";
+	gc.chosen_xaxis = "";
+	gc.chosen_multilines = "";
+
+	gc.graphLink = "";
+
+	gc.showSelection = function() {
+		console.log(gc.chosen_yaxis+" "+gc.chosen_xaxis+" "+gc.chosen_multilines);
+	};
+	gc.draw = function() {
+		var d = {
+			"flag": "graph",
+			"results": gc.result.results,
+			"yaxis": gc.chosen_yaxis,
+			"xaxis": gc.chosen_xaxis,
+			"multilines": gc.chosen_multilines
+		};
+		var promise = requestService.postGraph(d);
+		promise.then(function(response){
+			gc.graphLink = "http://188.131.137.105:8086/skbm/graph?uuid="+response.data;
+		}).catch(function(error){
+			console.log(error);
+		});
+	}
+}
+
 
 function metaService() {
 	var service = this;
@@ -134,11 +186,19 @@ function metaService() {
 			taskName: "Task"
 		}
 	];
+	var result = {};
 	service.getDatasetList = function(){return datasetList};
 	service.getSketchList = function(){return sketchList};
 	service.getExperimentList = function(){return experimentList};
+	service.getResult = function(){return result};
 	service.setDatasetList = function(data){datasetList = data;};
 	service.setSketchList = function(data){sketchList = data;};
+	service.setResult = function(data){
+		for(var key in data){
+			result[key] = data[key];
+		}
+		console.log(result);
+	};
 }
 
 requestService.$inject = ['$http','baseURL'];
@@ -155,6 +215,24 @@ function requestService($http,baseURL) {
 		});
 		return response
 	};
+
+	service.postExperiments = function(d) {
+		var response = $http({
+			method: 'POST',
+			url: baseURL,
+			data: d
+		});
+		return response;
+	}
+
+	service.postGraph = function(d) {
+		var response = $http({
+			method: 'POST',
+			url: baseURL,
+			data: d
+		});
+		return response;
+	}
 }
 
 function incrementSteps(steps,grids){
