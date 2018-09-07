@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include "test.h"
+#define ROOT_DIR "/home/ubuntu/pku-sketch-benchmark/"
 using namespace std;
 bool negative_sort_item(itemType &a, itemType &b)
 {
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
     for(auto iter = datasets.begin(); iter != datasets.end(); iter++) {
         string datasetName(*iter);
-        StreamData dat((string("../../../dataset/")+datasetName).c_str(), bytesPerStr);
+        StreamData dat((string(ROOT_DIR) + string("dataset/")+datasetName).c_str(), bytesPerStr);
         unordered_map<string, int> item2freq;
         unordered_map<string, int> item2idx;
         int idx =0;
