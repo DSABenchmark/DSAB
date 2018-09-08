@@ -1,40 +1,94 @@
 html {
 	font-family: sans-serif;
 }
-
 #header-nav {
 	background-color: lightgray;
+}
+header > nav > .container {
+	margin-bottom: 0;
 }
 
 .navbar-brand a:hover, .navbar-brand a:focus  {
 	text-decoration: none;
 }
-
 header {
 	margin-bottom: 50px;
 }
 
-section {
+body > .container {
 	background-color: #eee;
 	margin-bottom: 50px;
-	padding-bottom: 30px;
-}
-section div.blockTitle {
 	padding-top: 20px;
-	padding-bottom: 35px;
+	padding-bottom: 20px;
 }
-section#setup .dropdown{
-	margin-left: 30%
+.container > h2 {
+	margin-bottom: 30px;
 }
-section#grid-search .argument {
-	margin-bottom: 25px;
+.container > button {
+	margin-top: 30px;
 }
-section#grid-search .argument label {
-	font-size: 0.8em;
+
+#dataset-setup .list-group > a{
+	font-size: 1.5em;
 }
-section#grid-search .disableButton button {
-	margin-top: 24%
+
+
+.btn-group {
+	margin-bottom: 5px;
 }
-body > div.container {
-	margin-bottom: 50px;
+.btn-group button {
+	margin-right: 5px;
 }
+.btn-group > button {
+	border-radius: 0.25rem !important;; 
+}
+
+input.form-control-plaintext {
+	background-color: #fff;
+	border-radius: 0.25rem;
+}
+
+div.form-row > div.col {
+	margin-bottom: 5px;
+}
+
+hr {
+	border-top: 2px solid #999;
+	width: 50vw;
+}
+
+#submit-container{
+	background-color: #fff;
+}
+#submit-container > button {
+	margin-top: 0;
+}
+
+/*specific for addSketch.html*/
+#add-param-button {
+	margin-bottom: 20px;
+}
+#addSketch-container textarea {
+	height: 400px !important;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+#addSketch-container > form > div:nth-child(3) {
+	margin-top: 20px;
+}
+
+button > a {
+	text-decoration: none;
+	width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+

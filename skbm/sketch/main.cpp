@@ -14,7 +14,6 @@
 #include <tuple>
 #include "SketchBase.h"
 #include "factor.h"
-#include "json/json.h"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>

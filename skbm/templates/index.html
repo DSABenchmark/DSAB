@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app="SketchApp">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -8,6 +8,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
     <title>PKU Sketch Benchmark</title>
   </head>
@@ -23,105 +25,105 @@
         </div><!-- .container -->
       </nav><!-- #header-nav -->
     </header>
-    <section id="setup" class="container">
-      <div class="blockTitle"><h2 class="text-center">Basic Setup</h2></div>
-      <div id="dataset-row" class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <h3 class="text-center">Dataset</h3>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <div class="dropdown">
-            <a id="dataset-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-dataset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Please select a dataset
-            </a>
-            <div id="dataset-dropdown" class="dropdown-menu" aria-labelledby="btn-dataset">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">generate dataset</a>
+    {%raw%}
+    <div id="dataset-setup" class="container" ng-controller="datasetController as dsc">
+      <h2 class="text-center">Please Select One or More Datasets</h2>
+      <div class="row" ng-repeat="dataset in dsc.datasetList">
+        <div class="col-md-6"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)">{{ dataset.name }}</button></div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-lg btn-block">Generate A Dataset</button>
+    </div>
+    {%endraw%}
+    
+    {%raw%}
+    <div id="grid-setup" class="container" ng-controller="expController as ec">
+      <h2 class="text-center">Grid Search Experiments</h2>
+      <div class="row" ng-repeat="experiment in ec.experimentList">
+        <div class="col-md-12">
+          <div class="btn-group" role="group">
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{experiment.sketchName}}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" ng-repeat="sk in ec.sketchList" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a>
+                <div class="dropdown-divider"></div>
+                {%endraw%}
+                <a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a>
+                {%raw%}
+              </div>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{experiment.taskName}}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" ng-repeat="task in experiment.chosenSketch.tasks" ng-click="ec.writeTaskName(task.name, $parent.$index)">{{task.name}}</a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <hr>
-      <div id="sketch-row" class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <h3 class="text-center">Sketch</h3>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <div class="dropdown">
-            <a id="sketch-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-sketch" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Please select a sketch
-            </a>
-            <div id="sketch-dropdown" class="dropdown-menu" aria-labelledby="btn-sketch">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">upload sketch</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <div id="task-row" class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <h3 class="text-center">Task</h3>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <div class="dropdown">
-            <a id="task-setup" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="btn-task" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Please select a task
-            </a>
-            <div id="task-dropdown" class="dropdown-menu" aria-labelledby="btn-task">
-              <!-- <a class="dropdown-item" href="#">xxxDataset</a> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section id="grid-search" class="container">
-      <div class="blockTitle"><h2 class="text-center">Grid Search Experiment</h2></div>
-      <div class="argument row">
-        <div class="col-lg-10 col-md-10 col-sm-10">
-          <form class="row">
-            <div id="arg1" class="form-group col-lg-3 col-md-6 col-sm-6 mx-auto">
-              <label for="arg1Name">Argument Name</label>
-              <input type="text" class="form-control" id="arg1Name">
-            </div>
-            <div class="form-group col-lg-3 col-md-6 col-sm-6 mx-auto">
-              <label for="arg1type">Argument Type</label>
-              <input type="text" class="form-control" id="arg1type" placeholder="float">
-              <small class="form-text text-muted">only int, float, or text available</small>
-            </div>
-            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
-              <label for="arg1from">From</label>
-              <input type="text" class="form-control" id="arg1from">
-            </div>
-            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
-              <label for="arg1to">To</label>
-              <input type="text" class="form-control" id="arg1to">
-            </div>
-            <div class="form-group col-lg-2 col-md-4 col-sm-4 mx-auto">
-              <label for="arg1step">Step</label>
-              <input type="text" class="form-control" id="arg1step">
+        <div class="col-md-12">
+          <form>
+            <div class="form-row" ng-repeat="param in experiment.params">
+              <div class="col">
+                <input type="text" class="form-control text-center" value="{{param.field}}" placeholder="Parameter" disabled>
+              </div>
+              <div class="col">
+                <input type="value" class="form-control" placeholder="From" ng-model="param.from">
+              </div>
+              <div class="col">
+                <input type="value" class="form-control" placeholder="To" ng-model="param.to">
+              </div>
+              <div class="col">
+                <input type="value" class="form-control" placeholder="Step" ng-model="param.step">
+              </div>
             </div>
           </form>
         </div>
-        <div class="disableButton col-lg-2 col-md-2 col-sm-2">
-          <button type="button" class="btn btn-secondary">Disable</button>
+        <hr>
+      </div>
+      <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="ec.addExperiment()">Add an Experiment</button>
+    </div>
+    {%endraw%}
+    
+    {%raw%}
+    <div id="submit-container" class="container" ng-controller="submitController as sbc">
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()">Ready to Go!</button>
+    </div>
+    {%endraw%}
+
+    {%raw%}
+    <div id="graph-container" class="container" ng-controller="graphController as gc">
+      <form> <!-- ng-if="gc.result" -->
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Y axis</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
+            <option ng-repeat="yaxis in gc.result.yaxis">{{yaxis}}</option>
+          </select>
         </div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="col-12"><button type="button" class="btn btn-secondary btn-lg btn-block">Add an argument</button></div>
-      </div>
-    </section>
-    <div class="container"><button id="submit-button" type="button" class="btn btn-primary btn-lg btn-block">Submit!</button></div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">X axis</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_xaxis" ng-if="var != gc.chosen_multilines">
+            <option ng-repeat="var in gc.result.variables">{{var}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Multi-lines</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_multilines">
+            <option ng-repeat="var in gc.result.variables" ng-if="var != gc.chosen_xaxis">{{var}}</option>
+          </select>
+        </div>
+      </form>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>
+      <button type="button" class="btn btn-link btn-lg btn-block"><a ng-href="{{gc.graphLink}}" target="_blank"><div>Get the graph!</div></a></button>
+    </div>
+    {%endraw%}
+
     <script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="{{url_for('static', filename='js/index.js')}}"></script>
+    <!-- <script src="{{url_for('static', filename='js/index.js')}}"></script> -->
     
   </body>
 </html>
