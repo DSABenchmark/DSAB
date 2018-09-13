@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <set>
 #include "test.h"
-#define ROOT_DIR "/home/ubuntu/pku-sketch-benchmark/"
+#define ROOT_DIR "/root/pku-sketch-benchmark/"
 using namespace std;
 bool negative_sort_item(itemType &a, itemType &b)
 {

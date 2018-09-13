@@ -168,6 +168,7 @@ def api():
 @bp.route('/graph')
 def graph():
     img_path = request.args.get('uuid',"")
+    print(img_path)
     return send_file(img_path)
 
 def getGraphOptions(results):

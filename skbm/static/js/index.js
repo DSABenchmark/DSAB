@@ -1,4 +1,4 @@
-var url = "http://188.131.137.105:8086/skbm/api";
+var url = "http://47.105.144.16:8086/skbm/api";
 
 $.get(url+'?'+'get=datasetList', function(lst) {
 	for (var i in lst){

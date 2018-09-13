@@ -1,5 +1,5 @@
 #include "test.h"
-#define ROOT_DIR "/home/ubuntu/pku-sketch-benchmark/"
+#define ROOT_DIR "/root/pku-sketch-benchmark/"
 void frequencyTest(vector<string> & v,unordered_map<string, int> & item2freq, SketchBase& sketch,const int bytesPerStr,string frequency_file_name )
 {
     string sketch_name = sketch.sketch_name;
