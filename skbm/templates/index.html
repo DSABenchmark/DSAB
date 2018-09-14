@@ -28,10 +28,12 @@
     {%raw%}
     <div id="dataset-setup" class="container" ng-controller="datasetController as dsc">
       <h2 class="text-center">Please Select One or More Datasets</h2>
-      <div class="row" ng-repeat="dataset in dsc.datasetList">
-        <div class="col-md-6"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)">{{ dataset.name }}</button></div>
+      <div class="row">
+        <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="">{{ dataset.name }}</button></div>
       </div>
-      <button type="button" class="btn btn-secondary btn-lg btn-block">Generate A Dataset</button>
+      {%endraw%}
+      <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
+      {%raw%}
     </div>
     {%endraw%}
     

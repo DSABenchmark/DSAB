@@ -7,7 +7,7 @@ from werkzeug.exceptions import abort
 from pprint import pprint
 from os import path as osp
 import os
-from skbm.db import get_db, query_results
+from skbm.db import get_db, query_results, generate_dataset
 from skbm.config import cfg
 import json
 import matplotlib
@@ -30,6 +30,10 @@ def index():
 def addSketch():
     return render_template('addSketch.html')
 
+@bp.route('/addDataset.html')
+def addDataset():
+    return render_template('addDataset.html')
+
 @bp.route('/api', methods=['GET','POST'])
 def api():
     arg_get = request.args.get('get','');
@@ -40,7 +44,7 @@ def api():
                 # ret = []
                 # for dct in db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0}}]):
                 #     ret.append(dct['name'])
-                ret = list(db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0}}]))
+                ret = list(db.dataset_info.aggregate([{'$project': {'name': 1,'_id':0,'distriName':1, 'distinctNum':1, 'totalNum': 1, 'bytePerItem': 1}}]))
                 return json.dumps(ret)
             elif arg_get == 'sketchList':
                 db = get_db()
@@ -60,6 +64,26 @@ def api():
                 db = get_db()
                 dct = db.sketch_info.find_one({'name': sketchName})
                 return json.dumps({'params': dct['params']})
+            elif arg_get == 'gendataset':
+                distriName = request.args.get('distriName',"")
+                totalNum = int(request.args.get('totalNum',""))
+                distinctNum = int(request.args.get('distinctNum',""))
+                param1 = float(request.args.get('param1',""))
+                param2 = request.args.get('param2',"")
+
+                dsname = "{}_{}_{}_{}".format(distriName,totalNum,distinctNum,param1)
+                if param2:
+                    param2 = float(param2)
+                    dsname += '_{}'.format(param2)
+                    obj = generate_dataset(distriName,totalNum,distinctNum,param1,param2)
+                else:
+                    obj = generate_dataset(distriName,totalNum,distinctNum,param1)
+                dsname += '.dat'
+
+                return "Generate dataset: {}".format(dsname)
+
+
+
     elif request.method == 'POST':
         d = json.loads(request.data.decode())
         if 'flag' in d and d['flag'] == 'experiment':

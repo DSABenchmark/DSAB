@@ -18,6 +18,10 @@ function datasetController(requestService, metaService){
 	promise.then(function(response){
 		metaService.setDatasetList(response.data);
 		dsc.datasetList = metaService.getDatasetList();
+		console.log(dsc.datasetList);
+		$(function(){
+			$('[data-toggle="popover"]').popover()
+		});
 	})
 	.catch(function(error){
 		console.log('Error when requesting datasetList');

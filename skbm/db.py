@@ -12,12 +12,13 @@ from datetime import datetime
 from pprint import pprint
 # from os import environ
 
-#-------------------------added by Yucheng
+#-------------------------
 import json
 from skbm.config import cfg
 from os import path as osp
 import subprocess
 import numpy as np
+from skbm.generate_dataset import dataset_write
 
 def get_db():
     if 'db' not in g:
@@ -49,12 +50,20 @@ def init_existing_dataset():
     db = get_db()
     db.drop_collection('dataset_info')
     from pathlib import Path
-    iter_dataset = Path(cfg.PATH.dataset_dir).glob('*')
+    iter_dataset = Path(cfg.PATH.dataset_dir).glob('*.dat')
+    default_dslist = json.loads(open(cfg.PATH.defaultDatasetFile).read())['datasetArray']
+    default_dct = {dct['name']: dct for dct in default_dslist}
     lst = []
     for d in iter_dataset:
+        info = default_dct[d.name]
         lst.append({
                 'name': d.name,
                 'path': str(d),
+                'bytePerItem': int(info['bytePerItem']),
+                'distinctNum': info['distinctNum'],
+                'maxFrequency': int(info['maxFrequency']),
+                'minFrequency': int(info['minFrequency']),
+                'totalNum': int(info['totalNum']),
             })
     db.dataset_info.insert_many(lst)
     print('Initiated existing datasets!')
@@ -227,6 +236,29 @@ def parseResultFile(filename, arg):
                 'accuracy': accuracy,
             }
     return result
+
+def generate_dataset(distriName,totalNum,distinctNum,param1,param2=None):
+    filename = "{}_{}_{}_{}".format(distriName,totalNum,distinctNum,param1)
+    if param2:
+        filename += "_{}".format(param2)
+    filename += '.dat'
+    fp = osp.join(cfg.PATH.gen_dataset_dir, filename)
+    dataset_write(fp, distriName, cfg.bytePerStr, totalNum, distinctNum, param1, param2)
+    db = get_db()
+    obj = {
+            'name': filename,
+            'path': fp,
+            'bytePerItem': cfg.bytePerStr,
+            'distinctNum': distinctNum,
+            # 'maxFrequency': int(info['maxFrequency']),
+            # 'minFrequency': int(info['minFrequency']),
+            'totalNum': totalNum,
+            'param1': param1,
+            'param2': param2,
+        }
+    db.dataset_info.insert_one(obj.copy())
+    return obj
+
 
 
 
