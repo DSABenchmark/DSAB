@@ -82,8 +82,6 @@ def api():
 
                 return "Generate dataset: {}".format(dsname)
 
-
-
     elif request.method == 'POST':
         d = json.loads(request.data.decode())
         if 'flag' in d and d['flag'] == 'experiment':
@@ -167,6 +165,26 @@ def api():
                 }
                 lines.append(line)
             img_path = drawGraph(lines)
+            return img_path
+
+        elif 'flag' in d and d['flag'] == 'graph2':
+            results, pointList, yaxis = d['results'], d['pointList'], d['yaxis']
+            lines = {}
+            for point in pointList:
+                experimentIdx = int(point['experimentIdx'])
+                lines[point['line']] = lines.get(point['line'], []) + [(int(point['index']), results[experimentIdx]['taskResult'][yaxis])]
+            lst = []
+            for lineName, points in lines.items():
+                Y = list(map(lambda tup: tup[1], sorted(points, key=lambda tup: tup[0])))
+                line = {
+                    'X': list(range(len(Y))),
+                    'Y': Y,
+                    'xlabel': "",
+                    'ylabel': yaxis,
+                    'linelabel': lineName,
+                }
+                lst.append(line)
+            img_path = drawGraph(lst)
             return img_path
 
         else :

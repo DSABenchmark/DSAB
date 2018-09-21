@@ -6,6 +6,7 @@ angular.module('SketchApp', [])
 .controller('expController', expController)
 .controller('submitController', submitController)
 .controller('graphController', graphController)
+.controller('graphController2', graphController2)
 .service('metaService', metaService)
 .service('requestService', requestService)
 .constant('baseURL', "http://47.105.144.16:8086/skbm/api");
@@ -178,6 +179,53 @@ function graphController(requestService,metaService){
 	}
 }
 
+graphController2.$inject = ['requestService','metaService'];
+function graphController2(requestService,metaService){
+	var gc = this;
+
+	gc.chosen_yaxis = "";
+
+	gc.result = metaService.getResult();
+
+	gc.pointList = [
+		{
+			"line": "",
+			"index": "",
+			"experimentIdx": "",
+		}
+	];
+
+	gc.num_points = "1";
+	gc.num_lines = "1";
+
+	gc.search = "";
+
+	gc.addPoint = function() {
+		gc.pointList.push(
+			{
+				"line": "",
+				"index": "",
+				"experimentIdx": "",
+			}
+		);
+	};
+
+	gc.draw = function() {
+		var d = {
+			"flag": "graph2",
+			"pointList": gc.pointList,
+			"results": gc.result.results,
+			"yaxis": gc.chosen_yaxis
+		};
+		var promise = requestService.postGraph2(d);
+		promise.then(function(response){
+			gc.graphLink = "http://47.105.144.16:8086/skbm/graph?uuid="+response.data;
+		}).catch(function(error){
+			console.log(error);
+		});
+	};
+}
+
 
 function metaService() {
 	var service = this;
@@ -227,7 +275,7 @@ function requestService($http,baseURL) {
 			data: d
 		});
 		return response;
-	}
+	};
 
 	service.postGraph = function(d) {
 		var response = $http({
@@ -236,7 +284,16 @@ function requestService($http,baseURL) {
 			data: d
 		});
 		return response;
-	}
+	};
+
+	service.postGraph2 = function(d) {
+		var response = $http({
+			method: "POST",
+			url: baseURL,
+			data: d
+		});
+		return response;
+	};
 }
 
 function incrementSteps(steps,grids){
