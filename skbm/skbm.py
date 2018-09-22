@@ -14,6 +14,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import uuid
+import subprocess
 
 bp = Blueprint('skbm', __name__, url_prefix='/skbm')
 
@@ -195,14 +196,31 @@ def api():
                 'code': d['code'],
                 'tasks': cfg.TEMP.tasks,
             }
-            db = get_db()
-            db.sketch_info.remove({'name':dct['name']})
-            msg = db.sketch_info.insert(dct)
-            print(msg)
             with open(dct['path'],'w') as hd:
                 hd.write(dct['code'])
-            compiledResults = os.popen('cd {} && make AAA.out && cd -'.format(cfg.PATH.sketch_dir+'/task')).read()
-            return compiledResults
+            try:
+                p = subprocess.Popen(' '.join(['cd',cfg.PATH.sketch_dir+'/task','&&','make','AAA.out','&&','cd','-']),shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                # p = subprocess.Popen('cd {} && ls'.format(cfg.PATH.sketch_dir+'/task'),shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                # p.wait()
+                tup = p.communicate()
+                if p.poll():
+                    os.popen('rm {}'.format(dct['path']))
+                    errMessage = tup[1].decode()
+                    print(errMessage)
+                    return errMessage
+                print("Compile successfully!")
+                # compiledResults = os.popen('cd {} && make AAA.out && cd -'.format(cfg.PATH.sketch_dir+'/task')).read()
+                db = get_db()
+                db.sketch_info.remove({'name':dct['name']})
+                db.experiment.delete_many({'sketchName': dct['name']})
+                msg = db.sketch_info.insert(dct)
+                print(msg)
+                # return compiledResults
+                return "Compile successfully!"
+            except Exception as e:
+                os.popen('rm {}'.format(dct['path']))
+                print(str(e))
+                return str(e)
 
 
     return 'NoNoNo...'

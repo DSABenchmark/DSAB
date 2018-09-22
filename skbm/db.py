@@ -163,8 +163,12 @@ def query_results(args_per_dataset):
     for cmd_arg in cmd_args:
         cmd = '{} {}'.format(cfg.PATH.execute_file, cmd_arg)
         print('start ',cmd)
-        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.STDOUT)
-        p.wait()
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        tup = p.communicate()
+        print(tup[0].decode())
+        if p.poll():
+            print(tup[1].decode())
+            raise Exception
         print("finished ",cmd)
         print('-'*10)
 
@@ -196,7 +200,7 @@ def parseResultFile(filename, arg):
             lst = line.strip().split()
             result['taskResult'] = {
                 'totalNum': int(lst[0]),
-                'time': double(lst[1]),
+                'time': float(lst[1]),
             }
     elif taskName == 'freq':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
@@ -224,7 +228,7 @@ def parseResultFile(filename, arg):
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
             trueSet, querySet = set(), set()
             for line in hd:
-                trueItem, queryItem = list(map(int, line.strip().split()))
+                trueItem, trueFreq, queryItem, queryFreq = list(map(int, line.strip().split()))
                 trueSet.add(trueItem)
                 querySet.add(queryItem)
             totalNum = len(trueSet)
