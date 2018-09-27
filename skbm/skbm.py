@@ -252,18 +252,51 @@ def getGraphOptions(results):
     return ret
 
 def drawGraph(lines):
+
+    generateDataFile(lines)
+    generateListJson(lines)
+
     plt.figure()
     for line in lines:
         plt.plot(line['X'],line['Y'], label=line['linelabel'])
     plt.legend()
     plt.xlabel(line['xlabel'])
     plt.ylabel(line['ylabel'])
-
     unique_id = uuid.uuid1()
     img_path = osp.join(cfg.PATH.graph_dir,str(unique_id)+'.png')
     plt.savefig(img_path)
     plt.clf()
     return img_path
+
+
+def transfertoLatex(str):
+    return str.replace('_','\_')
+def generateDataFile(lines):
+    file_path = osp.join(cfg.PATH.figure_dir,'data.dat')
+    f = open(file_path,'w')
+    f.write('Metric')
+    for line in lines:
+        f.write('\t'+transfertoLatex(line['linelabel']))
+    for i in range(len(lines[0]['X'])):
+        f.write('\n')
+        f.write(str(lines[0]['X'][i]))
+        for tmp in lines:
+            f.write('\t' + str(tmp['Y'][i]))
+
+def generateListJson(lines):
+    dict  ={}
+    dict['file']  = osp.join(cfg.PATH.figure_dir,'data.dat')
+    unique_id = uuid.uuid1()
+    dict['output'] = osp.join(cfg.PATH.graph_dir,"test.pdf")
+    dict['style'] = 2
+    dict['chart.type']  = 'line'
+    dict['separator'] = '\t'
+    dict['y_label'] = lines[0]['ylabel']
+    json_path  =osp.join(cfg.PATH.figure_dir,'list.json')
+    f = open(json_path,'w')
+    jsonObj = json.dumps(dict)
+    f.write('['+jsonObj+']')
+
 
 
 
