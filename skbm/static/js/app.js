@@ -184,6 +184,7 @@ function graphController2(requestService,metaService){
 	var gc = this;
 
 	gc.chosen_yaxis = "";
+	gc.xlabel = "";
 
 	gc.result = metaService.getResult();
 
@@ -215,7 +216,8 @@ function graphController2(requestService,metaService){
 			"flag": "graph2",
 			"pointList": gc.pointList,
 			"results": gc.result.results,
-			"yaxis": gc.chosen_yaxis
+			"yaxis": gc.chosen_yaxis,
+			"xlabel": gc.xlabel
 		};
 		var promise = requestService.postGraph2(d);
 		promise.then(function(response){

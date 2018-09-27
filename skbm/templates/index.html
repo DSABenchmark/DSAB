@@ -131,16 +131,20 @@
             <option ng-repeat="yaxis in gc.result.yaxis">{{yaxis}}</option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="formGroupExampleInput">X Label</label>
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Name of X axis (DO NOT USE UNDERLINE!)" ng-model="gc.xlabel">
+        </div>
         <button type="button" class="btn btn-secondary btn-block" ng-click="gc.addPoint()">Add a Point</button>
         <div class="form-group">
           <div class="form-row" ng-repeat="point in gc.pointList">
             <div class="col">
               <label for="Line">Line</label>
-              <input id="Line" type="value" class="form-control" ng-model="point.line" placeholder="Index of Line">
+              <input id="Line" type="value" class="form-control" ng-model="point.line" placeholder="Name of Line">
             </div>
             <div class="col">
               <label for="Point">Point</label>
-              <input id="Point" type="value" class="form-control" ng-model="point.index" placeholder="Index of Point">
+              <input id="Point" type="value" class="form-control" ng-model="point.index" placeholder="Value in x coordinate">
             </div>
             <div class="col">
               <label for="Experiment">Experiment</label>

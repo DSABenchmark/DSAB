@@ -169,18 +169,19 @@ def api():
             return img_path
 
         elif 'flag' in d and d['flag'] == 'graph2':
-            results, pointList, yaxis = d['results'], d['pointList'], d['yaxis']
+            results, pointList, yaxis, xlabel = d['results'], d['pointList'], d['yaxis'], d['xlabel']
             lines = {}
             for point in pointList:
                 experimentIdx = int(point['experimentIdx'])
-                lines[point['line']] = lines.get(point['line'], []) + [(int(point['index']), results[experimentIdx]['taskResult'][yaxis])]
+                lines[point['line']] = lines.get(point['line'], []) + [(float(point['index']), results[experimentIdx]['taskResult'][yaxis])]
             lst = []
             for lineName, points in lines.items():
                 Y = list(map(lambda tup: tup[1], sorted(points, key=lambda tup: tup[0])))
+                X = list(map(lambda tup: tup[0], sorted(points, key=lambda tup: tup[0])))
                 line = {
-                    'X': list(range(len(Y))),
+                    'X': X,
                     'Y': Y,
-                    'xlabel': "",
+                    'xlabel': xlabel,
                     'ylabel': yaxis,
                     'linelabel': lineName,
                 }
@@ -254,19 +255,29 @@ def getGraphOptions(results):
 def drawGraph(lines):
 
     generateDataFile(lines)
-    generateListJson(lines)
+    unique_id = generateListJson(lines)
 
-    plt.figure()
-    for line in lines:
-        plt.plot(line['X'],line['Y'], label=line['linelabel'])
-    plt.legend()
-    plt.xlabel(line['xlabel'])
-    plt.ylabel(line['ylabel'])
-    unique_id = uuid.uuid1()
+    p = subprocess.Popen(' '.join(['python', cfg.PATH.figure_dir+'/run.py', cfg.PATH.figure_dir+'/list.json']), shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    tup = p.communicate()
+    if p.poll():
+        errMessage = tup[1].decode()
+        print(errMessage)
+        return errMessage
+    print("Generated graph {}.png".format(unique_id))
     img_path = osp.join(cfg.PATH.graph_dir,str(unique_id)+'.png')
-    plt.savefig(img_path)
-    plt.clf()
     return img_path
+
+    # plt.figure()
+    # for line in lines:
+    #     plt.plot(line['X'],line['Y'], label=line['linelabel'])
+    # plt.legend()
+    # plt.xlabel(line['xlabel'])
+    # plt.ylabel(line['ylabel'])
+    # unique_id = uuid.uuid1()
+    # img_path = osp.join(cfg.PATH.graph_dir,str(unique_id)+'.png')
+    # plt.savefig(img_path)
+    # plt.clf()
+    # return img_path
 
 
 def transfertoLatex(str):
@@ -274,7 +285,7 @@ def transfertoLatex(str):
 def generateDataFile(lines):
     file_path = osp.join(cfg.PATH.figure_dir,'data.dat')
     f = open(file_path,'w')
-    f.write('Metric')
+    f.write(transfertoLatex(lines[0]['xlabel']))
     for line in lines:
         f.write('\t'+transfertoLatex(line['linelabel']))
     for i in range(len(lines[0]['X'])):
@@ -287,7 +298,7 @@ def generateListJson(lines):
     dict  ={}
     dict['file']  = osp.join(cfg.PATH.figure_dir,'data.dat')
     unique_id = uuid.uuid1()
-    dict['output'] = osp.join(cfg.PATH.graph_dir,"test.pdf")
+    dict['output'] = osp.join(cfg.PATH.graph_dir,"{}.png".format(unique_id))
     dict['style'] = 2
     dict['chart.type']  = 'line'
     dict['separator'] = '\t'
@@ -296,6 +307,7 @@ def generateListJson(lines):
     f = open(json_path,'w')
     jsonObj = json.dumps(dict)
     f.write('['+jsonObj+']')
+    return unique_id
 
 
 
