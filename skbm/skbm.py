@@ -169,6 +169,7 @@ def api():
             return img_path
 
         elif 'flag' in d and d['flag'] == 'graph2':
+            # pprint(d)
             results, pointList, yaxis, xlabel = d['results'], d['pointList'], d['yaxis'], d['xlabel']
             lines = {}
             for point in pointList:
