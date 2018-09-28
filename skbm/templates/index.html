@@ -135,7 +135,14 @@
           <label for="formGroupExampleInput">X Label</label>
           <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Name of X axis (DO NOT USE UNDERLINE!)" ng-model="gc.xlabel">
         </div>
-        <button type="button" class="btn btn-secondary btn-block" ng-click="gc.addPoint()">Add a Point</button>
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-secondary btn-block" ng-click="gc.addPoint()">Add a Point</button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-danger btn-block" ng-click="gc.deletePoint()">Delete the last Point</button>
+          </div>
+        </div>
         <div class="form-group">
           <div class="form-row" ng-repeat="point in gc.pointList">
             <div class="col">

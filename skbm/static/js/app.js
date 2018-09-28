@@ -211,6 +211,11 @@ function graphController2(requestService,metaService){
 		);
 	};
 
+	gc.deletePoint = function() {
+		console.log("hello");
+		gc.pointList.splice(gc.pointList.length-1,1);
+	};
+
 	gc.draw = function() {
 		var d = {
 			"flag": "graph2",
