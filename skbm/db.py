@@ -12,12 +12,13 @@ from datetime import datetime
 from pprint import pprint
 # from os import environ
 
-#-------------------------added by Yucheng
+#-------------------------
 import json
 from skbm.config import cfg
 from os import path as osp
 import subprocess
 import numpy as np
+from skbm.generate_dataset import dataset_write
 
 def get_db():
     if 'db' not in g:
@@ -49,12 +50,20 @@ def init_existing_dataset():
     db = get_db()
     db.drop_collection('dataset_info')
     from pathlib import Path
-    iter_dataset = Path(cfg.PATH.dataset_dir).glob('*')
+    iter_dataset = Path(cfg.PATH.dataset_dir).glob('*.dat')
+    default_dslist = json.loads(open(cfg.PATH.defaultDatasetFile).read())['datasetArray']
+    default_dct = {dct['name']: dct for dct in default_dslist}
     lst = []
     for d in iter_dataset:
+        info = default_dct[d.name]
         lst.append({
                 'name': d.name,
                 'path': str(d),
+                'bytePerItem': int(info['bytePerItem']),
+                'distinctNum': info['distinctNum'],
+                'maxFrequency': int(info['maxFrequency']),
+                'minFrequency': int(info['minFrequency']),
+                'totalNum': int(info['totalNum']),
             })
     db.dataset_info.insert_many(lst)
     print('Initiated existing datasets!')
@@ -154,8 +163,12 @@ def query_results(args_per_dataset):
     for cmd_arg in cmd_args:
         cmd = '{} {}'.format(cfg.PATH.execute_file, cmd_arg)
         print('start ',cmd)
-        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.STDOUT)
-        p.wait()
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        tup = p.communicate()
+        print(tup[0].decode())
+        if p.poll():
+            print(tup[1].decode())
+            raise Exception
         print("finished ",cmd)
         print('-'*10)
 
@@ -187,7 +200,8 @@ def parseResultFile(filename, arg):
             lst = line.strip().split()
             result['taskResult'] = {
                 'totalNum': int(lst[0]),
-                'time': double(lst[1]),
+                'time': float(lst[1]),
+                'throughput': int(lst[0])/float(lst[1]),
             }
     elif taskName == 'freq':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
@@ -202,11 +216,11 @@ def parseResultFile(filename, arg):
             totalNum = len(trueValueList)
             accNum = np.sum(trueValueList == estimatedValueList)
             accuracy = accNum / totalNum
-            AAE = np.mean(estimatedValueList - trueValueList)
-            ARE = np.mean((estimatedValueList - trueValueList) / trueValueList)
+            AAE = np.mean(np.abs(estimatedValueList - trueValueList))
+            ARE = np.mean(np.abs(estimatedValueList - trueValueList) / trueValueList)
             result['taskResult'] = {
-                'totalNum': totalNum,
-                'accNum': accNum,
+                # 'totalNum': totalNum,
+                # 'accNum': accNum,
                 'accuracy': accuracy,
                 'AAE': AAE,
                 'ARE': ARE,
@@ -215,18 +229,41 @@ def parseResultFile(filename, arg):
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
             trueSet, querySet = set(), set()
             for line in hd:
-                trueItem, queryItem = list(map(int, line.strip().split()))
+                trueItem, trueFreq, queryItem, queryFreq = list(map(int, line.strip().split()))
                 trueSet.add(trueItem)
                 querySet.add(queryItem)
             totalNum = len(trueSet)
             accNum = len(trueSet & querySet)
             accuracy = accNum / totalNum
             result['taskResult'] = {
-                'totalNum': totalNum,
-                'accNum': accNum,
-                'accuracy': accuracy,
+                'k': totalNum,
+                # 'accNum': accNum,
+                'precision': accuracy,
             }
     return result
+
+def generate_dataset(distriName,totalNum,distinctNum,param1,param2=None):
+    filename = "{}_{}_{}_{}".format(distriName,totalNum,distinctNum,param1)
+    if param2:
+        filename += "_{}".format(param2)
+    filename += '.dat'
+    fp = osp.join(cfg.PATH.gen_dataset_dir, filename)
+    dataset_write(fp, distriName, cfg.bytePerStr, totalNum, distinctNum, param1, param2)
+    db = get_db()
+    obj = {
+            'name': filename,
+            'path': fp,
+            'bytePerItem': cfg.bytePerStr,
+            'distinctNum': distinctNum,
+            # 'maxFrequency': int(info['maxFrequency']),
+            # 'minFrequency': int(info['minFrequency']),
+            'totalNum': totalNum,
+            'param1': param1,
+            'param2': param2,
+        }
+    db.dataset_info.insert_one(obj.copy())
+    return obj
+
 
 
 

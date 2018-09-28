@@ -6,9 +6,10 @@ angular.module('SketchApp', [])
 .controller('expController', expController)
 .controller('submitController', submitController)
 .controller('graphController', graphController)
+.controller('graphController2', graphController2)
 .service('metaService', metaService)
 .service('requestService', requestService)
-.constant('baseURL', "http://188.131.137.105:8086/skbm/api");
+.constant('baseURL', "http://47.105.144.16:8086/skbm/api");
 
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
@@ -18,6 +19,10 @@ function datasetController(requestService, metaService){
 	promise.then(function(response){
 		metaService.setDatasetList(response.data);
 		dsc.datasetList = metaService.getDatasetList();
+		console.log(dsc.datasetList);
+		$(function(){
+			$('[data-toggle="popover"]').popover()
+		});
 	})
 	.catch(function(error){
 		console.log('Error when requesting datasetList');
@@ -167,11 +172,65 @@ function graphController(requestService,metaService){
 		};
 		var promise = requestService.postGraph(d);
 		promise.then(function(response){
-			gc.graphLink = "http://188.131.137.105:8086/skbm/graph?uuid="+response.data;
+			gc.graphLink = "http://47.105.144.16:8086/skbm/graph?uuid="+response.data;
 		}).catch(function(error){
 			console.log(error);
 		});
 	}
+}
+
+graphController2.$inject = ['requestService','metaService'];
+function graphController2(requestService,metaService){
+	var gc = this;
+
+	gc.chosen_yaxis = "";
+	gc.xlabel = "";
+
+	gc.result = metaService.getResult();
+
+	gc.pointList = [
+		{
+			"line": "",
+			"index": "",
+			"experimentIdx": "",
+		}
+	];
+
+	gc.num_points = "1";
+	gc.num_lines = "1";
+
+	gc.search = "";
+
+	gc.addPoint = function() {
+		gc.pointList.push(
+			{
+				"line": "",
+				"index": "",
+				"experimentIdx": "",
+			}
+		);
+	};
+
+	gc.deletePoint = function() {
+		console.log("hello");
+		gc.pointList.splice(gc.pointList.length-1,1);
+	};
+
+	gc.draw = function() {
+		var d = {
+			"flag": "graph2",
+			"pointList": gc.pointList,
+			"results": gc.result.results,
+			"yaxis": gc.chosen_yaxis,
+			"xlabel": gc.xlabel
+		};
+		var promise = requestService.postGraph2(d);
+		promise.then(function(response){
+			gc.graphLink = "http://47.105.144.16:8086/skbm/graph?uuid="+response.data;
+		}).catch(function(error){
+			console.log(error);
+		});
+	};
 }
 
 
@@ -223,7 +282,7 @@ function requestService($http,baseURL) {
 			data: d
 		});
 		return response;
-	}
+	};
 
 	service.postGraph = function(d) {
 		var response = $http({
@@ -232,7 +291,16 @@ function requestService($http,baseURL) {
 			data: d
 		});
 		return response;
-	}
+	};
+
+	service.postGraph2 = function(d) {
+		var response = $http({
+			method: "POST",
+			url: baseURL,
+			data: d
+		});
+		return response;
+	};
 }
 
 function incrementSteps(steps,grids){

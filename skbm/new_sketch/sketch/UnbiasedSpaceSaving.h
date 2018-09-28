@@ -1,5 +1,5 @@
-#ifndef DeterminsticSpaceSaving_H //must change this MACRO
-#define DeterminsticSpaceSaving_H //must change this MACRO
+#ifndef UnbiasedSpaceSaving_H //must change this MACRO
+#define UnibiasedSpaceSaving_H //must change this MACRO
 #include "SketchBase.h" //DO NOT change this include
 #include "factor.h"//DO NOT change this include
 #include "../hash/hashfunction.h"//If you want to use DSAB-builtin hashfunction must include this
@@ -7,6 +7,7 @@
 #define key_len 4
 /*----optional according to your need----*/
 #include<string>
+#include<random>
 #include<iostream>
 #include<memory.h>
 #include <cstdint>
@@ -42,43 +43,44 @@ bool erase(char * key)
 
 /*----SketchBase virtual function must be finished----*/
 /*
-virtual ~SketchBase(){}
-virtual void Insert(const char * str, const int & len) = 0;
-virtual int frequencyQuery(const char * str, const int & len) = 0;
-virtual std::vector<std::pair <std::string, int> > topkQuery(const int & k) = 0;
-virtual void parameterSet(const std::string& parameterName, double  parameterValue)=0;
-virtual void init() = 0;
+virtual ~SketchBase();
+virtual void parameterSet(const string& parameterName, double  parameterValue)=0;
+virtual init() = 0;
+virtual void Insert(const uint8_t *str, const int & len) = 0;
+virtual int frequencyQuery(const uint8_t *str, const int & len) = 0;
+virtual vector<string>  topkQuery(const int & k) = 0;
 virtual void reset() = 0;//reset sketch to the initial state
 */
 /*----SketchBase virtual function must be finished----*/
-template<int keylen> struct KeyNode;
+template<int keylen> struct ussKeyNode;
 template<int keylen>
-struct ValueNode
+struct ussValueNode
 {
-	ValueNode<keylen> * prev = NULL;
-	ValueNode<keylen> * next = NULL;
-	KeyNode<keylen> * first = NULL;
+	ussValueNode<keylen> * prev = NULL;
+	ussValueNode<keylen> * next = NULL;
+	ussKeyNode<keylen> * first = NULL;
 	uint32_t val = 0;
 };
 
 template<int keylen>
-struct KeyNode
+struct ussKeyNode
 {
-	ValueNode<keylen> * parent = NULL;
-	KeyNode<keylen> * prev = NULL;
-	KeyNode<keylen> * next = NULL;
+	ussValueNode<keylen> * parent = NULL;
+	ussKeyNode<keylen> * prev = NULL;
+	ussKeyNode<keylen> * next = NULL;
 	char key[keylen];
 };
-class DeterministicSpaceSaving : public SketchBase {
+class UnbiasedSpaceSaving : public SketchBase {
 private:
 	/*----optional according to your need----*/
-	uint32_t mem_in_bytes;
 	int capacity;//parameter
+	uint32_t mem_in_bytes;
+
 
 
 	int bytes_per_item = 36 + key_len * 2;
-	typedef KeyNode<key_len> SSKeyNode;
-	typedef ValueNode<key_len> SSValNode;
+	typedef ussKeyNode<key_len> SSKeyNode;
+	typedef ussValueNode<key_len> SSValNode;
 	SSKeyNode *key_nodes;
 	SSValNode *val_nodes;
 
@@ -95,23 +97,25 @@ private:
 	void append_new_key(const char * key) {
 		// exact first key in tail node
 		SSKeyNode * victim = tail_node->first;
-		const char * old_key = victim->key;
-		hash_table.erase(string(old_key, key_len));
-		hash_table[string(key, key_len)] = victim;
+		random_device rd;
+		if (!(rd() % (tail_node->val + 1)))
+		{
+			const char * old_key = victim->key;
+			hash_table.erase(string(old_key, key_len));
+			hash_table[string(key, key_len)] = victim;
 
-		memcpy(victim->key, key, key_len);
+			memcpy(victim->key, key, key_len);
+		}
 		add_counter(victim);
 	}
 
 	void add_counter(SSKeyNode * my)
 	{
-		
-if (my->next == my)
+		if (my->next == my)
 		{
-                     
-                       my->parent->val++;
+			my->parent->val++;
 			SSValNode * brother = my->parent->prev;
-                          if (brother && brother->val == my->parent->val)
+			if (brother && brother->val == my->parent->val)
 			{
 				val_node_pool[val_node_empty_cnt++] = my->parent; // release my parent
 																  //                cout << "release" << endl;
@@ -135,14 +139,14 @@ if (my->next == my)
 		}
 		else
 		{
-                        my->next->prev = my->prev;
+			my->next->prev = my->prev;
 			my->prev->next = my->next;
 			if (my->parent->first == my) {
 				my->parent->first = my->next;
 			}
+
 			SSValNode * brother = my->parent->prev;
 			if (brother && brother->val == my->parent->val + 1) {
-
 				my->parent = brother;
 				my->next = brother->first;
 				my->prev = brother->first->prev;
@@ -168,10 +172,10 @@ if (my->next == my)
 	}
 public:
 	using SketchBase::sketch_name;//DO NOT change this declaration
-	DeterministicSpaceSaving()
+	UnbiasedSpaceSaving()
 	{
 		/*constructed function MUST BT non-parameter!!!*/
-		sketch_name = "DeterministicSpaceSaving ";//please keep sketch_name the same as class name and .h file name
+		sketch_name = "UnbiasedSpaceSaving";//please keep sketch_name the same as class name and .h file name
 	}
 	void parameterSet(const std::string& parameterName, double  parameterValue)
 	{
@@ -180,6 +184,7 @@ public:
 		/*----optional according to your need----*/
 		if (parameterName == "capacity")
 		{
+
 			capacity = parameterValue;
 			return;
 		}
@@ -222,7 +227,6 @@ public:
 		if (itr == hash_table.end())
 		{
 			// key not found
-                        
 			append_new_key(str);
 		}
 		else
@@ -296,7 +300,7 @@ public:
 		hash_table.reserve(10 * capacity);
 		/*----optional according to your need----*/
 	}
-	~DeterministicSpaceSaving()
+	~UnbiasedSpaceSaving()
 	{
 		/*MUST have this function */
 
@@ -309,5 +313,5 @@ public:
 
 	/*----optional You can add your function----*/
 };
-REGISTER(DeterministicSpaceSaving);
+REGISTER(UnbiasedSpaceSaving);
 #endif//DO NOT change this file

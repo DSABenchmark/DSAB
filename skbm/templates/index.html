@@ -28,10 +28,12 @@
     {%raw%}
     <div id="dataset-setup" class="container" ng-controller="datasetController as dsc">
       <h2 class="text-center">Please Select One or More Datasets</h2>
-      <div class="row" ng-repeat="dataset in dsc.datasetList">
-        <div class="col-md-6"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)">{{ dataset.name }}</button></div>
+      <div class="row">
+        <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="">{{ dataset.name }}</button></div>
       </div>
-      <button type="button" class="btn btn-secondary btn-lg btn-block">Generate A Dataset</button>
+      {%endraw%}
+      <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
+      {%raw%}
     </div>
     {%endraw%}
     
@@ -113,6 +115,67 @@
           <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_multilines">
             <option ng-repeat="var in gc.result.variables" ng-if="var != gc.chosen_xaxis">{{var}}</option>
           </select>
+        </div>
+      </form>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>
+      <button type="button" class="btn btn-link btn-lg btn-block"><a ng-href="{{gc.graphLink}}" target="_blank"><div>Get the graph!</div></a></button>
+    </div>
+    {%endraw%}
+
+    {%raw%}
+    <div id="graph-container" class="container" ng-controller="graphController2 as gc">
+      <form> <!-- ng-if="gc.result" -->
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Y axis</label>
+          <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
+            <option ng-repeat="yaxis in gc.result.yaxis">{{yaxis}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="formGroupExampleInput">X Label</label>
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Name of X axis (DO NOT USE UNDERLINE!)" ng-model="gc.xlabel">
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-secondary btn-block" ng-click="gc.addPoint()">Add a Point</button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-danger btn-block" ng-click="gc.deletePoint()">Delete the last Point</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-row" ng-repeat="point in gc.pointList">
+            <div class="col">
+              <label for="Line">Line</label>
+              <input id="Line" type="value" class="form-control" ng-model="point.line" placeholder="Name of Line">
+            </div>
+            <div class="col">
+              <label for="Point">Point</label>
+              <input id="Point" type="value" class="form-control" ng-model="point.index" placeholder="Value in x coordinate">
+            </div>
+            <div class="col">
+              <label for="Experiment">Experiment</label>
+              <input id="Experiment" type="value" class="form-control" ng-model="point.experimentIdx" placeholder="Index of Experiment">
+            </div>
+          </div>
+        </div>
+        <!-- <div class="form-row">
+          <div class="col">
+            <label for="nppl"># of points per line</label>
+            <input id="nppl" type="text" class="form-control" ng-model="gc.num_points">
+          </div>
+          <div class="col">
+            <label for="nl"># of lines</label>
+            <input id="nl" type="text" class="form-control" ng-model="gc.num_lines">
+          </div>
+        </div> -->
+        <div class="form-group">
+          <div class="form-row">
+            <input type="text" class="form-control" placeholder="Search Box" ng-model="gc.search">
+          </div>
+          <ul>
+            <li ng-repeat="result in gc.result.results | filter : gc.search">{{$index}}. {{result.output_filename}}</li>
+          </ul>
         </div>
       </form>
       <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>

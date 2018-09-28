@@ -13,7 +13,7 @@ virtual ~SketchBase() = 0;
 virtual void parameterSet(const string& parameterName, double  parameterValue)=0;
 virtual init() = 0;
 virtual void Insert(const char *str, const int & len) = 0;
-virtual int frequencyQuery(const char *str, const int & len) = 0;
+virtual std::vector<std::pair <std::string, int> > frequencyQuery(const char *str, const int & len) = 0;
 virtual vector<string> topkQuery(const int & k) = 0;
 virtual void reset() = 0;//reset sketch to the initial state
 */
@@ -79,9 +79,9 @@ public:
         }
         return res;
     }
-    vector<string> topkQuery(const int & k)
+	std::vector<std::pair <std::string, int> > topkQuery(const int & k)
     {
-       vector<string> topkItem;
+	   std::vector<std::pair <std::string, int> >  topkItem;
        return topkItem;
     }
     void reset()

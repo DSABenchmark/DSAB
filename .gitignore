@@ -16,3 +16,9 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+.env/
+
+experiment/
+
+figure/list.json
