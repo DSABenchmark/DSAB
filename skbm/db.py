@@ -201,6 +201,7 @@ def parseResultFile(filename, arg):
             result['taskResult'] = {
                 'totalNum': int(lst[0]),
                 'time': float(lst[1]),
+                'throughput': int(lst[0])/float(lst[1]),
             }
     elif taskName == 'freq':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
@@ -215,11 +216,11 @@ def parseResultFile(filename, arg):
             totalNum = len(trueValueList)
             accNum = np.sum(trueValueList == estimatedValueList)
             accuracy = accNum / totalNum
-            AAE = np.mean(estimatedValueList - trueValueList)
-            ARE = np.mean((estimatedValueList - trueValueList) / trueValueList)
+            AAE = np.mean(np.abs(estimatedValueList - trueValueList))
+            ARE = np.mean(np.abs(estimatedValueList - trueValueList) / trueValueList)
             result['taskResult'] = {
-                'totalNum': totalNum,
-                'accNum': accNum,
+                # 'totalNum': totalNum,
+                # 'accNum': accNum,
                 'accuracy': accuracy,
                 'AAE': AAE,
                 'ARE': ARE,
@@ -235,9 +236,9 @@ def parseResultFile(filename, arg):
             accNum = len(trueSet & querySet)
             accuracy = accNum / totalNum
             result['taskResult'] = {
-                'totalNum': totalNum,
-                'accNum': accNum,
-                'accuracy': accuracy,
+                'k': totalNum,
+                # 'accNum': accNum,
+                'precision': accuracy,
             }
     return result
 
