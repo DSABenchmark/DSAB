@@ -60,7 +60,7 @@ private:
 	
 	/*----optional according to your need----*/
 	int hash_num;//parameter
-	int mem_in_bytes;//parameter
+	int memory_in_bytes;//parameter
 	int capacity;//parameter
 
 	typedef pair <string, int> KV;
@@ -128,9 +128,9 @@ public:
 			capacity = parameterValue;
 			return;
 		}
-		if (parameterName == "mem_in_bytes")
+		if (parameterName == "memory_in_bytes")
 		{
-			mem_in_bytes = parameterValue;
+			memory_in_bytes = parameterValue;
 			return;
 		}
 		/*----optional according to your need----*/
@@ -141,7 +141,8 @@ public:
 
 		/*----optional according to your need----*/
 		heap_element_num = 0;
-		w = mem_in_bytes / 4 / hash_num;
+		int sketchMem = memory_in_bytes - capacity * 8;
+		w = sketchMem / 4 / hash_num;
 		heap = new KV[capacity];
 		memset(heap, 0, sizeof(heap));
 		ht.init(4 * capacity);

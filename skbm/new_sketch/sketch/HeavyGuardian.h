@@ -74,7 +74,7 @@ private:
 public:
     using SketchBase::sketch_name;//DO NOT change this declaration
 	int cnt;
-	string ans[10005];
+	string ans[100005];
 	void ADD(string x) { ans[++cnt] = x; }
     HeavyGuardian()
     {

@@ -239,7 +239,6 @@ public:
 
         /*----optional according to your need----*/
 		Counter *tmp;
-
 		// interpret a negative item identifier as a removal
 		result->bucket[result->buckets].item = string(str,len);
 		result->bucket[result->buckets].count = 1;
@@ -273,12 +272,13 @@ public:
         /*----optional according to your need----*/
 		std::vector<std::pair <std::string, int> > topkItem;
 		int i, point=0;
-
+	
 	
 		// should do a countermerge here.
 		countershell(result->buckets, result->bucket);
 		result->holdersize = countermerge(result->newcount, result->bucket, result->holder,
 			result->buckets, result->holdersize, result->maxholder);
+	
 		auto swap_tmp = result->newcount;
 		result->newcount = result->holder;
 		result->holder = swap_tmp;
@@ -289,9 +289,13 @@ public:
 			tmp.emplace_back(make_pair(result->holder[i].item, result->holder[i].count + result->epoch));
 		}
 		sort(tmp.begin(), tmp.end(),LossyCountcmp);
+		
+		cout << k << endl;
+		cout << result->holdersize << endl;
 		for (int i = 0; i < min(k,result->holdersize); i++)
 		{
 			topkItem.push_back(tmp[i]);
+			cout << i << endl;
 		}
         return topkItem;
         /*----optional according to your need----*/

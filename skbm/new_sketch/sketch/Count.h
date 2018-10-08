@@ -59,7 +59,7 @@ virtual void reset() = 0;//reset sketch to the initial state
 class Count: public SketchBase {
 private:
 	/*----optional according to your need----*/
-	int mem_in_bytes;//parameter
+	int memory_in_bytes;//parameter
 	int hash_num;//parameter
 
 	typedef pair <string, int> KV;
@@ -88,9 +88,9 @@ public:
             hash_num = parameterValue;
             return;
         }
-        if (parameterName=="mem_in_bytes")
+        if (parameterName=="memory_in_bytes")
         {
-            mem_in_bytes = parameterValue;
+            memory_in_bytes = parameterValue;
             return;
         }
         /*----optional according to your need----*/
@@ -100,7 +100,7 @@ public:
         /*MUST have this function even empty function body*/
 
         /*----optional according to your need----*/
-		w = mem_in_bytes / 4 / hash_num;
+		w = memory_in_bytes / 4 / hash_num;
 
         c_sketch = new int*[hash_num];
         hash = new BOBHash[hash_num];

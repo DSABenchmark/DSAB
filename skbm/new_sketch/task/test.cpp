@@ -27,6 +27,11 @@ void topkTest(vector<string> & v,vector<itemType> & frequentItem,int k,SketchBas
     std::vector<std::pair <std::string, int> > queryResult = sketch.topkQuery(k);
     ofstream topk_file;
     topk_file.open(string(ROOT_DIR)+"experiment/output/"+topk_file_name);
+    if(queryResult.size()<k)
+    {
+        cout<<"top-k k is too big!!!"<<endl;
+        return;
+    }
     for(int i =0;i<k;++i)
     {
         topk_file << item2idx[frequentItem[i].id] << " " << frequentItem[i].frequency << " " << item2idx[queryResult[i].first] << " " << queryResult[i].second << endl;
