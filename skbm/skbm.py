@@ -162,7 +162,7 @@ def api():
                     'Y': Y,
                     'xlabel': xaxis,
                     'ylabel': yaxis,
-                    'linelabel': lineName,
+                    'linelabel': str(lineName),
                 }
                 lines.append(line)
             img_path = drawGraph(lines)
