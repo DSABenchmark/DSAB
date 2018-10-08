@@ -10,7 +10,8 @@ __C.PATH.root_dir = os.environ['ROOT_DIR']
 __C.PATH.pkg_dir = osp.join(__C.PATH.root_dir, 'skbm')
 __C.PATH.figure_dir = osp.join(__C.PATH.root_dir, 'figure')
 __C.PATH.dataset_dir = osp.join(__C.PATH.root_dir, 'dataset')
-__C.PATH.gen_dataset_dir = osp.join(__C.PATH.dataset_dir, 'gen')
+# __C.PATH.gen_dataset_dir = osp.join(__C.PATH.dataset_dir, 'gen')
+__C.PATH.gen_dataset_dir = __C.PATH.dataset_dir
 Path(__C.PATH.gen_dataset_dir).mkdir(exist_ok=True, parents=True)
 __C.PATH.defaultDatasetFile = osp.join(__C.PATH.dataset_dir, 'defaultDataset.json')
 

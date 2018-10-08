@@ -25,7 +25,7 @@ function DatasetGeneratorController(requestService) {
 		var promise = requestService.generateCmd(dsgc.distriName,dsgc.totalNum,dsgc.distinctNum,dsgc.param1,dsgc.param2);
 
 		promise.then(function(response){
-			dsgc.result = JSON.parse(response.data);
+			dsgc.result = response.data;
 		}).catch(function(error){dsgc.result = error;});
 
 	};

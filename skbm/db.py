@@ -37,10 +37,10 @@ def init_db():
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
-    init_db()
+    # init_db()
     init_existing_dataset()
-    init_existing_sketch()
-    click.echo('Initialized the mongo database.')
+    # init_existing_sketch()
+    # click.echo('Initialized the mongo database.')
 
 def init_app(app):
     app.teardown_appcontext(close_db)
@@ -249,6 +249,7 @@ def generate_dataset(distriName,totalNum,distinctNum,param1,param2=None):
     filename += '.dat'
     fp = osp.join(cfg.PATH.gen_dataset_dir, filename)
     dataset_write(fp, distriName, cfg.bytePerStr, totalNum, distinctNum, param1, param2)
+    print('Generated dataset!',filename)
     db = get_db()
     obj = {
             'name': filename,
