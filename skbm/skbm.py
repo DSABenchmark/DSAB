@@ -300,11 +300,12 @@ def generateListJson(lines):
     dict['file']  = osp.join(cfg.PATH.figure_dir,'data.dat')
     unique_id = uuid.uuid1()
     dict['output'] = osp.join(cfg.PATH.graph_dir,"{}.png".format(unique_id))
-    dict['style'] = 2
     if ylabelMake(lines[0]['ylabel']).find('Throughput') != -1:
         dict['chart.type'] = 'bar'
+        dict['style'] = 2
     else:
         dict['chart.type']  = 'line'
+        dict['style'] = 2
     dict['separator'] = '\t'
     dict['y_label'] = ylabelMake(lines[0]['ylabel'])
     json_path  =osp.join(cfg.PATH.figure_dir,'list.json')
@@ -314,9 +315,11 @@ def generateListJson(lines):
     return unique_id
 
 def ylabelMake(str):
-    a = str.replace('precision','Precision')
-    b= a.replace('throughput','Throughput (IPS)')
-    return b
+    if str.find('precision')!=-1:
+        return  str.replace('precision','Precision')
+    if str.find('throughput')!=-1:
+        return str.replace('throughput','Throughput (MIPS)')
+    return str
 def yvalueMake(str):
     tmp = float(str)
     if(tmp>1000000):
