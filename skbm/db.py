@@ -201,7 +201,7 @@ def parseResultFile(filename, arg):
             result['taskResult'] = {
                 'totalNum': int(lst[0]),
                 'time': float(lst[1]),
-                'throughput': int(lst[0])/float(lst[1]),
+                'throughput': int(lst[0])/float(lst[1])/1000000.0,
             }
     elif taskName == 'freq':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
