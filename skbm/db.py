@@ -128,16 +128,16 @@ def query_results(args_per_dataset):
         else :
             args_to_experiment.append(arg)
     # pprint(args_to_experiment)
-    if arg['taskName'] == 'topk':
-        alltasks = ['topk','speed','freq']
-    else :
-        alltasks = ['freq', 'speed']
     cmd_args = set()
     for arg in args_to_experiment:
         lst = [
             arg['datasetName'],
             arg['sketchName'],
         ]
+        if arg['taskName'] == 'topk':
+            alltasks = ['topk','speed','freq']
+        else :
+            alltasks = ['freq', 'speed']
         lst += alltasks
         kvpairsList = []
         for key in arg:
@@ -146,12 +146,12 @@ def query_results(args_per_dataset):
         kvpairsList.sort()
         lst += kvpairsList
         cmd_args.add('+'.join(lst))
-        arg['output_filename'] = (
+        arg['output_filename'] = [
                 arg['datasetName'] + '+' +
                 arg['sketchName'] + '+' +
-                arg['taskName'] + '+' +
-                '+'.join(kvpairsList)
-            )
+                tskNm + '+' +
+                '+'.join(kvpairsList) for tskNm in alltasks
+            ]
     cmd_args = list(cmd_args)
     # cmd = '{} {}'.format(cfg.PATH.execute_file, ' '.join(cmd_args))
     # pprint(cmd)
@@ -182,18 +182,22 @@ def query_results(args_per_dataset):
         #     if key not in ['datasetName', 'sketchName', 'taskName','output_filename']:
         #         lst.append(key+'='+str(arg[key]))
         # resultFile = '+'.join(lst)
-        resultFile = arg['output_filename']
-        result = parseResultFile(resultFile, arg)
-        # pprint(result)
-        result = eval(str(result))
-        db.experiment.insert_one(result.copy())
-        results.append(result)
+        for resultFile in arg['output_filename']:
+            result = parseResultFile(resultFile, arg)
+            # pprint(result)
+            result = eval(str(result))
+            db.experiment.insert_one(result.copy())
+            if resultFile.split('+')[2] == arg['taskName']:
+                results.append(result)
 
     return results
 
 def parseResultFile(filename, arg):
     result = arg.copy()
-    taskName = arg['taskName']
+    # taskName = arg['taskName']
+    taskName = filename.split('+')[2]
+    result['taskName'] = taskName
+    result.pop('output_filename')
     if taskName == 'speed':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
             line = hd.read()
