@@ -197,7 +197,7 @@ def parseResultFile(filename, arg):
     # taskName = arg['taskName']
     taskName = filename.split('+')[2]
     result['taskName'] = taskName
-    result.pop('output_filename')
+    result['output_filename'] = filename
     if taskName == 'speed':
         with open(osp.join(cfg.PATH.output_dir, filename)) as hd:
             line = hd.read()
