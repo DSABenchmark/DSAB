@@ -9,7 +9,7 @@ angular.module('SketchApp', [])
 .controller('graphController2', graphController2)
 .service('metaService', metaService)
 .service('requestService', requestService)
-.constant('baseURL', "http://47.105.144.16:8086/skbm/api");
+.constant('baseURL', "http://"+document.location.host+"/skbm/api");
 
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
@@ -188,7 +188,7 @@ function graphController(requestService,metaService){
 		};
 		var promise = requestService.postGraph(d);
 		promise.then(function(response){
-			gc.graphLink = "http://47.105.144.16:8086/skbm/graph?uuid="+response.data;
+			gc.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
 		}).catch(function(error){
 			console.log(error);
 		});
@@ -243,7 +243,7 @@ function graphController2(requestService,metaService){
 		};
 		var promise = requestService.postGraph2(d);
 		promise.then(function(response){
-			gc.graphLink = "http://47.105.144.16:8086/skbm/graph?uuid="+response.data;
+			gc.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
 		}).catch(function(error){
 			console.log(error);
 		});
