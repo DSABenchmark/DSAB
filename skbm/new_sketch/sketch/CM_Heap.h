@@ -60,16 +60,20 @@ private:
 	
 	/*----optional according to your need----*/
 	int hash_num;//parameter
-	int mem_in_bytes;//parameter
+	int memory_in_bytes;//parameter
 	int capacity;//parameter
 
-	typedef pair <std::string, int> KV;
-	KV * heap;
+	typedef pair <string, int> KV;
+	typedef pair <int, string> VK;
+	VK * heap;
 	int heap_element_num;
+
+
 	int w;
 	int ** cm_sketch;
 	BOBHash * hash;
-	cuckoo::CuckooHashing<4> ht;
+	//cuckoo::CuckooHashing<4> ht;
+	unordered_map<string, uint32_t> ht;
 	/*----optional according to your need----*/
 	// heap
 	void heap_adjust_down(int i) {
@@ -77,15 +81,15 @@ private:
 			int l_child = 2 * i + 1;
 			int r_child = 2 * i + 2;
 			int larger_one = i;
-			if (l_child < heap_element_num && heap[l_child].second < heap[larger_one].second) {
+			if (l_child < heap_element_num && heap[l_child] < heap[larger_one]) {
 				larger_one = l_child;
 			}
-			if (r_child < heap_element_num && heap[r_child].second < heap[larger_one].second) {
+			if (r_child < heap_element_num && heap[r_child] < heap[larger_one]) {
 				larger_one = r_child;
 			}
 			if (larger_one != i) {
 				swap(heap[i], heap[larger_one]);
-				swap(ht[heap[i].first.c_str()], ht[heap[larger_one].first.c_str()]);
+				swap(ht[heap[i].second], ht[heap[larger_one].second]);
 				heap_adjust_down(larger_one);
 			}
 			else {
@@ -93,14 +97,15 @@ private:
 			}
 		}
 	}
+
 	void heap_adjust_up(int i) {
 		while (i > 1) {
 			int parent = (i - 1) / 2;
-			if (heap[parent].second <= heap[i].second) {
+			if (heap[parent] <= heap[i]) {
 				break;
 			}
 			swap(heap[i], heap[parent]);
-			swap(ht[heap[i].first.c_str()], ht[heap[parent].first.c_str()]);
+			swap(ht[heap[i].second], ht[heap[parent].second]);
 			i = parent;
 		}
 	}
@@ -128,9 +133,9 @@ public:
 			capacity = parameterValue;
 			return;
 		}
-		if (parameterName == "mem_in_bytes")
+		if (parameterName == "memory_in_bytes")
 		{
-			mem_in_bytes = parameterValue;
+			memory_in_bytes = parameterValue;
 			return;
 		}
 		/*----optional according to your need----*/
@@ -141,13 +146,14 @@ public:
 
 		/*----optional according to your need----*/
 		heap_element_num = 0;
-		w = mem_in_bytes / 4 / hash_num;
-		heap = new KV[capacity];
-		memset(heap, 0, sizeof(heap));
-		ht.init(4*capacity);
+		int sketchMem = memory_in_bytes - capacity * 8;
+		w = sketchMem / 4 / hash_num;
+		heap = new VK[capacity];
+		memset(heap, 0, capacity * sizeof(VK));
 		for (int i = 0; i < capacity; ++i) {
-			heap[i].second = 0;
+			heap[i].first = 0;
 		}
+		heap_element_num = 0;
 		cm_sketch = new int*[hash_num];
 		hash = new BOBHash[hash_num];
 		for (int i = 0; i<hash_num; ++i)
@@ -172,25 +178,24 @@ public:
 			ans = std::min(val, ans);
 		}
 
+		tmin = ans;
 		string str_key = string(str, len);
-		if (ht.find(str))
-		{
-			heap[ht[str]].second++;
-			heap_adjust_down(ht[str]);
+		if (ht.find(str_key) != ht.end()) {
+			heap[ht[str_key]].first++;
+			heap_adjust_down(ht[str_key]);
 		}
 		else if (heap_element_num < capacity) {
-			//memcpy(heap[heap_element_num].first, str, len);
-            heap[heap_element_num] = make_pair(str_key, ans);
-			//heap[heap_element_num].second = ans;
-			ht[str] = heap_element_num++;
+			heap[heap_element_num].second = str_key;
+			heap[heap_element_num].first = tmin;
+			ht[str_key] = heap_element_num++;
 			heap_adjust_up(heap_element_num - 1);
 		}
-		else if ( ans > heap[0].second) {
-			KV & kv = heap[0];
-			ht.erase(kv.first.c_str());
-            kv.first = str_key;
-			kv.second = ans;
-			ht[str] = 0;
+		else if (tmin > heap[0].first) {
+			VK & kv = heap[0];
+			ht.erase(kv.second);
+			kv.second = str_key;
+			kv.first = tmin;
+			ht[str_key] = 0;
 			heap_adjust_down(0);
 		}
 		/*----optional according to your need----*/
@@ -215,14 +220,16 @@ public:
 
 		/*----optional according to your need----*/
 		std::vector<std::pair <std::string, int> > topkItem;
-		vector<pair<string, uint32_t> > tmp;
+
+		VK * a = new VK[capacity];
 		for (int i = 0; i < capacity; ++i) {
-				tmp.emplace_back(make_pair(heap[i].first, heap[i].second));
+			a[i] = heap[i];
 		}
-		sort(tmp.begin(), tmp.end(), CMHcmp);
-		for (int i = 0; i < k; ++i)
-		{
-			topkItem.push_back(tmp[i]);
+		sort(a, a + capacity);
+		int i;
+		for (i = 0; i < k && i < capacity; ++i) {
+			topkItem.push_back(make_pair(a[capacity - 1 - i].second, a[capacity - 1 - i].first));
+
 		}
 		return topkItem;
 		/*----optional according to your need----*/

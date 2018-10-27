@@ -38,6 +38,18 @@ function datasetController(requestService, metaService){
 	};
 }
 
+function deepCopy(obj){
+    if(typeof obj != 'object'){
+        return obj;
+    }
+    var newobj = {};
+    for ( var attr in obj) {
+    	if(attr!=="$$hashKey")
+        	newobj[attr] = deepCopy(obj[attr]);
+    }
+    return newobj;
+}
+
 expController.$inject = ['requestService','metaService'];
 function expController(requestService,metaService) {
 	var ec = this;
@@ -70,10 +82,14 @@ function expController(requestService,metaService) {
 	};
 
 	ec.addExperiment = function(){
-		ec.experimentList.push({
-			sketchName: "Sketch",
-			taskName: "Task"
-		});
+		var L = ec.experimentList.length;
+		var lastExperiment = ec.experimentList[L-1];
+		console.log(lastExperiment);
+		ec.experimentList.push(deepCopy(lastExperiment));
+		// ec.experimentList.push({
+		// 	sketchName: "Sketch",
+		// 	taskName: "Task"
+		// });
 	}
 }
 
@@ -202,11 +218,12 @@ function graphController2(requestService,metaService){
 	gc.search = "";
 
 	gc.addPoint = function() {
+		var L = gc.pointList.length;
 		gc.pointList.push(
 			{
-				"line": "",
-				"index": "",
-				"experimentIdx": "",
+				"line": gc.pointList[L-1]["line"],
+				"index": gc.pointList[L-1]["index"],
+				"experimentIdx": gc.pointList[L-1]["experimentIdx"],
 			}
 		);
 	};

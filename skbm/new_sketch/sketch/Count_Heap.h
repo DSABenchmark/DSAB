@@ -61,7 +61,7 @@ class Count_Heap: public SketchBase {
 private:
 	/*----optional according to your need----*/
 	int capacity;//parameter
-	int mem_in_bytes;//parameter
+	int memory_in_bytes;//parameter
 	int hash_num;//parameter
 
 	typedef pair <string, int> KV;
@@ -127,9 +127,9 @@ public:
             hash_num = parameterValue;
             return;
         }
-        if (parameterName=="mem_in_bytes")
+        if (parameterName=="memory_in_bytes")
         {
-            mem_in_bytes = parameterValue;
+            memory_in_bytes = parameterValue;
             return;
         }
          if (parameterName=="capacity")
@@ -144,13 +144,14 @@ public:
         /*MUST have this function even empty function body*/
 
         /*----optional according to your need----*/
-		w = mem_in_bytes / 4 / hash_num;
+		int sketchMem = memory_in_bytes - capacity * 8;
+		w = sketchMem / 4 / hash_num;
 		heap = new VK[capacity];
 		memset(heap, 0, capacity * sizeof(VK));
 		for (int i = 0; i < capacity; ++i) {
 			heap[i].first = 0;
 		}
-
+		heap_element_num = 0;
         c_sketch = new int*[hash_num];
         hash = new BOBHash[hash_num];
 		hash_polar = new BOBHash[hash_num];

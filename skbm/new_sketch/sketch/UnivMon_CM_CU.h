@@ -1,5 +1,5 @@
-#ifndef UnivMon_Count_H //must change this MACRO
-#define UnivMon_Count_H //must change this MACRO
+#ifndef UnivMon_CM_CU_H //must change this MACRO
+#define UnivMon_CM_CU_H //must change this MACRO
 #include "SketchBase.h" //DO NOT change this include
 #include "factor.h"//DO NOT change this include
 #include "../hash/hashfunction.h"//If you want to use DSAB-builtin hashfunction must include this
@@ -21,12 +21,12 @@ using std::min;
 using std::swap;
 
 #define SQR(X) (X) * (X)
-bool countcurCMP(std::pair<string, int> a, std::pair<string, int> b)
+bool CMCUcurCMP(std::pair<string, int> a, std::pair<string, int> b)
 {
 	return a.second > b.second;
 }
 template<uint8_t univ_key_len, int capacity, int d = 3>
-struct CountSketch {
+struct CMCUSketch {
 public:
 	typedef pair <string, int> KV;
 	typedef pair <int, string> VK;
@@ -97,7 +97,7 @@ public:
 	//public:
 	string name;
 
-	CountSketch(int mem_in_bytes_) : mem_in_bytes(mem_in_bytes_), heap_element_num(0) {
+	CMCUSketch(int mem_in_bytes_) : mem_in_bytes(mem_in_bytes_), heap_element_num(0) {
 		//        memset(heap, 0, sizeof(heap));
 		w = mem_in_bytes / 4 / d;
 		for (int i = 0; i < capacity; ++i) {
@@ -113,23 +113,25 @@ public:
 		}
 
 		stringstream name_buf;
-		name_buf << "CountSketch@" << mem_in_bytes;
+		name_buf << "CMCUSketch@" << mem_in_bytes;
 		name = name_buf.str();
 	}
 
 	void insert(const char * key) {
-		int ans[d];
-
-		for (int i = 0; i < d; ++i) {
-			int idx = hash[i]->Run(key, univ_key_len) % w;
-			int polar = hash_polar[i]->Run(key, univ_key_len) % 2;
-
-			cm_sketch[i][idx] += polar ? 1 : -1;
-
-			int val = cm_sketch[i][idx];
-
-			ans[i] = polar ? val : -val;
+		int idx = hash[0]->Run(key, univ_key_len) % w;
+		int tmin = cm_sketch[0][idx];
+		int tidx = 0;
+		
+		for (int i = 1; i < d; ++i) {
+			idx = hash[i]->Run(key, univ_key_len) % w;
+			if (tmin > cm_sketch[i][idx])
+			{
+				tmin =cm_sketch[i][idx];
+				tidx = i;
+			}
+	
 		}
+		cm_sketch[tidx][hash[tidx]->Run(key, univ_key_len) % w]++;
 	}
 
 	//    void get_top_k(uint16_t k, uint32_t * result) {
@@ -150,26 +152,14 @@ public:
 		/*MUST have this function DO NOT change function head and parameter type */
 
 		/*----optional according to your need----*/
-		int ans[d];
+		int idx = hash[0]->Run(str, len) % w;
+		int tmin = cm_sketch[0][idx];
 
-		for (int i = 0; i < d; ++i) {
-			int idx = hash[i]->Run(str, len) % w;
-			int polar = hash_polar[i]->Run(str, len) % 2;
-
+		for (int i = 1; i < d; ++i) {
+			idx = hash[i]->Run(str, len) % w;
+			tmin=  min(cm_sketch[i][idx],tmin);
+		}
 		
-			int val = cm_sketch[i][idx];
-
-			ans[i] = polar ? val : -val;
-		}
-		sort(ans, ans + d);
-		int tmin;
-		if (d % 2 == 0) {
-			tmin = (ans[d / 2] + ans[d / 2 - 1]) / 2;
-		}
-		else {
-			tmin = ans[d / 2];
-		}
-		tmin = (tmin <= 1) ? 1 : tmin;
 		return tmin;
 		/*----optional according to your need----*/
 	}
@@ -211,7 +201,7 @@ public:
 		}
 	}
 
-	~CountSketch() {
+	~CMCUSketch() {
 		for (int i = 0; i < d; ++i) {
 			delete hash[i];
 			delete hash_polar[i];
@@ -257,13 +247,13 @@ virtual void reset() = 0;//reset sketch to the initial state
 /*----SketchBase virtual function must be finished----*/
 
 
-class UnivMon_Count: public SketchBase {
+class UnivMon_CM_CU: public SketchBase {
 private:
 	/*----optional according to your need----*/
 	int mem_in_bytes;//parameter
 	int level;//parameter
 	int capacity=1000;
-	typedef CountSketch<4, 1000, 3> L2HitterDetector;
+	typedef CMCUSketch<4, 1000, 3> L2HitterDetector;
 
     L2HitterDetector ** sketches;
     BOBHash ** polar_hash;
@@ -271,10 +261,10 @@ private:
     /*----optional according to your need----*/
 public:
     using SketchBase::sketch_name;//DO NOT change this declaration
-    UnivMon_Count()
+    UnivMon_CM_CU()
     {
         /*constructed function MUST BT non-parameter!!!*/
-        sketch_name =  "UnivMon_Count";//please keep sketch_name the same as class name and .h file name
+        sketch_name =  "UnivMon_CM_CU";//please keep sketch_name the same as class name and .h file name
     }
     void parameterSet(const std::string& parameterName, double  parameterValue)
     {
@@ -300,19 +290,14 @@ public:
 
         /*----optional according to your need----*/
 		//srand(time(0));
-	
 		double total = (1u << level) - 1;
 		sketches = new  L2HitterDetector*[level];
-
 		polar_hash = new BOBHash*[level];
-		
 		for (int i = 0; i < level; ++i) {
 			//int mem_for_sk = int(mem_in_bytes) - level * (4 + 4) * capacity;
 			int mem_for_sk = int(mem_in_bytes);
 			int mem = int(mem_for_sk / level);
-		
 			sketches[i] = new L2HitterDetector(mem);
-		
 			auto idx = uint32_t(rand() % MAX_PRIME32);
 			polar_hash[i] = new BOBHash;
 			polar_hash[i]->SetSeed(idx);
@@ -324,7 +309,6 @@ public:
         /*MUST have this function DO NOT change parameter type*/
 
         /*----optional according to your need----*/
-		
 		int polar;
 		element_num++;
 		sketches[0]->insert(str);
@@ -345,7 +329,6 @@ public:
          /*MUST have this function DO NOT change function head and parameter type */
 
         /*----optional according to your need----*/
-		
 		int polar;
 		sketches[0]->insert(str);
 		int res = sketches[0]->frequencyQuery(str, len);
@@ -384,7 +367,7 @@ public:
 			
 				curItem.emplace_back(kv);
 		}
-		sort(curItem.begin(), curItem.end(), countcurCMP);
+		sort(curItem.begin(), curItem.end(), CMCUcurCMP);
 		int t = curItem.size() > k ? k : curItem.size();
 		for (int i = 0; i < t; ++i)
 		{
@@ -401,7 +384,7 @@ public:
 		element_num = 0;
         /*----optional according to your need----*/
     }
-    ~UnivMon_Count()
+    ~UnivMon_CM_CU()
     {
         /*MUST have this function */
 
@@ -418,5 +401,5 @@ public:
 
     /*----optional You can add your function----*/
 };
-REGISTER(UnivMon_Count);
+REGISTER(UnivMon_CM_CU);
 #endif//DO NOT change this file

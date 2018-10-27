@@ -1,5 +1,5 @@
-#ifndef UnivMon_Count_H //must change this MACRO
-#define UnivMon_Count_H //must change this MACRO
+#ifndef UnivMon_CM_H //must change this MACRO
+#define UnivMon_CM_H //must change this MACRO
 #include "SketchBase.h" //DO NOT change this include
 #include "factor.h"//DO NOT change this include
 #include "../hash/hashfunction.h"//If you want to use DSAB-builtin hashfunction must include this
@@ -122,8 +122,6 @@ public:
 
 		for (int i = 0; i < d; ++i) {
 			int idx = hash[i]->Run(key, univ_key_len) % w;
-			int polar = hash_polar[i]->Run(key, univ_key_len) % 2;
-
 			cm_sketch[i][idx] += 1;
 
 	

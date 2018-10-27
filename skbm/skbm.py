@@ -162,7 +162,7 @@ def api():
                     'Y': Y,
                     'xlabel': xaxis,
                     'ylabel': yaxis,
-                    'linelabel': lineName,
+                    'linelabel': str(lineName),
                 }
                 lines.append(line)
             img_path = drawGraph(lines)
@@ -291,7 +291,7 @@ def generateDataFile(lines):
         f.write('\t'+transfertoLatex(line['linelabel']))
     for i in range(len(lines[0]['X'])):
         f.write('\n')
-        f.write(str(lines[0]['X'][i]))
+        f.write(yvalueMake(str(lines[0]['X'][i])))
         for tmp in lines:
             f.write('\t' + str(tmp['Y'][i]))
 
@@ -300,18 +300,33 @@ def generateListJson(lines):
     dict['file']  = osp.join(cfg.PATH.figure_dir,'data.dat')
     unique_id = uuid.uuid1()
     dict['output'] = osp.join(cfg.PATH.graph_dir,"{}.png".format(unique_id))
-    dict['style'] = 2
-    dict['chart.type']  = 'line'
+    if ylabelMake(lines[0]['ylabel']).find('Throughput') != -1:
+        dict['chart.type'] = 'bar'
+        dict['style'] = 2
+    else:
+        dict['chart.type']  = 'line'
+        dict['style'] = 2
     dict['separator'] = '\t'
-    dict['y_label'] = lines[0]['ylabel']
+    dict['y_label'] = ylabelMake(lines[0]['ylabel'])
     json_path  =osp.join(cfg.PATH.figure_dir,'list.json')
     f = open(json_path,'w')
     jsonObj = json.dumps(dict)
     f.write('['+jsonObj+']')
     return unique_id
 
-
-
+def ylabelMake(str):
+    if str.find('precision')!=-1:
+        return  str.replace('precision','Precision')
+    if str.find('throughput')!=-1:
+        return str.replace('throughput','Throughput (MIPS)')
+    return str
+def yvalueMake(str):
+    tmp = float(str)
+    if(tmp>1000000):
+        return str(round(tmp/1000000,2))+"M"
+    if(tmp>10000):
+        return  str(round(tmp/1000,2))+"K"
+    return str
 
 
 
