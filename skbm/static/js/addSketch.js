@@ -4,7 +4,7 @@
 angular.module('addSketchApp',[])
 .controller('scriptController', scriptController)
 .service('requestService', requestService)
-.constant('baseURL', "http://47.105.144.16:8086/skbm/api");
+.constant('baseURL', "http://"+document.location.host+"/skbm/api");
 
 scriptController.$inject = ['requestService'];
 function scriptController(requestService) {

@@ -31,15 +31,25 @@ def close_db(e=None):
         db.client.close()
 
 def init_db():
-    db = get_db()
-    db.client.drop_database('sketch')
+    dropFlag = 'a'
+    while dropFlag not in ['y','n']:
+        dropFlag = input("Drop current database or not? (y/n)")
+        if dropFlag == 'y':
+            db = get_db()
+            db.client.drop_database('sketch')
+            print("current database dropped!")
+        elif dropFlag=='n':
+            print("ignored")
+        else:
+            print("invalid input: {}".format(dropFlag))
+    print('-'*20)
 
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
-    # init_db()
+    init_db()
     init_existing_dataset()
-    # init_existing_sketch()
+    init_existing_sketch()
     # click.echo('Initialized the mongo database.')
 
 def init_app(app):
@@ -47,73 +57,61 @@ def init_app(app):
     app.cli.add_command(init_db_command)
 
 def init_existing_dataset():
-    db = get_db()
-    db.drop_collection('dataset_info')
-    from pathlib import Path
-    iter_dataset = Path(cfg.PATH.dataset_dir).glob('*.dat')
-    default_dslist = json.loads(open(cfg.PATH.defaultDatasetFile).read())['datasetArray']
-    default_dct = {dct['name']: dct for dct in default_dslist}
-    lst = []
-    for d in iter_dataset:
-        info = default_dct[d.name]
-        lst.append({
-                'name': d.name,
-                'path': str(d),
-                'bytePerItem': int(info['bytePerItem']),
-                'distinctNum': info['distinctNum'],
-                'maxFrequency': int(info['maxFrequency']),
-                'minFrequency': int(info['minFrequency']),
-                'totalNum': int(info['totalNum']),
-            })
-    db.dataset_info.insert_many(lst)
-    print('Initiated existing datasets!')
+    dropFlag = 'a'
+    while dropFlag not in ['y','n']:
+        dropFlag = input("Initiate dataset information or not? (y/n)")
+        if dropFlag == 'y':
+            db = get_db()
+            db.drop_collection('dataset_info')
+            from pathlib import Path
+            iter_dataset = Path(cfg.PATH.dataset_dir).glob('*.dat')
+            default_dslist = json.loads(open(cfg.PATH.defaultDatasetFile).read())['datasetArray']
+            default_dct = {dct['name']: dct for dct in default_dslist}
+            lst = []
+            for d in iter_dataset:
+                info = default_dct[d.name]
+                lst.append({
+                        'name': d.name,
+                        'path': str(d),
+                        'bytePerItem': int(info['bytePerItem']),
+                        'distinctNum': info['distinctNum'],
+                        'maxFrequency': int(info['maxFrequency']),
+                        'minFrequency': int(info['minFrequency']),
+                        'totalNum': int(info['totalNum']),
+                    })
+            db.dataset_info.insert_many(lst)
+            print('Initiated existing datasets!')
+        elif dropFlag=='n':
+            print("ignored")
+        else:
+            print("invalid input: {}".format(dropFlag))
+    print('-'*20)
 
 def init_existing_sketch():
-    db = get_db()
-    db.drop_collection('sketch_info')
-    # info = [
-    #     {
-    #         'name': 'CmSketch',
-    #         'path': osp.join(cfg.PATH.sketch_dir, 'sketch', 'CmSketch.h'),
-    #         'params': [
-    #                 {
-    #                     'field': 'hash_num',
-    #                     'type': 'int',
-    #                     'help': 'xxx',
-    #                 },
-    #                 {
-    #                     'field': 'bit_per_counter',
-    #                     'type': 'int',
-    #                     'help': 'xxx',
-    #                 },
-    #                 {
-    #                     'field': 'counter_per_array',
-    #                     'type': 'int',
-    #                     'help': 'xxx',
-    #                 },
-    #             ],
-    #         'tasks': [
-    #             {
-    #                 'name': 'freq',
-    #                 'params': [],
-    #             },
-    #             {
-    #                 'name': 'topk',
-    #                 'params': [{
-    #                     'field': 'k',
-    #                     'type': 'int',
-    #                     'help': 'xxx',
-    #                 }],
-    #             },
-    #             {
-    #                 'name': 'speed',
-    #                 'params': [],
-    #             },
-    #         ],
-    #     },
-    # ]
-    # db.sketch_info.insert_many(info);
-    print('Initiated existing sketches!')
+    dropFlag = 'a'
+    while dropFlag not in ['y','n']:
+        dropFlag = input("Initiate sketch information or not? (y/n)")
+        if dropFlag == 'y':
+            db = get_db()
+            db.drop_collection('sketch_info')
+            sketchList = json.loads(open(osp.join(cfg.PATH.root_dir,'staticSketchList.json')).read())
+            msg = db.sketch_info.insert_many(sketchList)
+            # print(msg)
+            print('Initiated existing sketches!')
+        elif dropFlag=='n':
+            print("ignored")
+        else:
+            print("invalid input: {}".format(dropFlag))
+    import subprocess
+    p = subprocess.Popen(' '.join(['cd',cfg.PATH.sketch_dir+'/task','&&','make','AAA.out','&&','cd','-']),shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    tup = p.communicate()
+    if p.poll():
+        os.popen('rm {}'.format(dct['path']))
+        errMessage = tup[1].decode()
+        print(errMessage)
+        return errMessage
+    print("Compiled successfully!")
+    print('-'*20)
 
 def query_results(args_per_dataset):
     db = get_db()
