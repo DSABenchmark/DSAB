@@ -102,6 +102,15 @@ def init_existing_sketch():
             print("ignored")
         else:
             print("invalid input: {}".format(dropFlag))
+    import subprocess
+    p = subprocess.Popen(' '.join(['cd',cfg.PATH.sketch_dir+'/task','&&','make','AAA.out','&&','cd','-']),shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    tup = p.communicate()
+    if p.poll():
+        os.popen('rm {}'.format(dct['path']))
+        errMessage = tup[1].decode()
+        print(errMessage)
+        return errMessage
+    print("Compiled successfully!")
     print('-'*20)
 
 def query_results(args_per_dataset):
