@@ -1,5 +1,5 @@
 CC=g++ -mbmi -msse2 -w
-CFLAGS = -std=c++11
+CFLAGS = -std=c++11 -O3
 OBJS=main.cpp test.cpp factor.cpp
 sketchList.h:
 	sh genSketchList.sh

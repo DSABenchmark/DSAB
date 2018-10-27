@@ -224,19 +224,20 @@ public:
 				counter[0][my_word_index] += value[i] == min_value ? ((uint64)0x1 << (counter_offset[i] << 2)) : 0;
 
 			}
-			return;
+			
 		}
-
-
-		for (int i = 0; i < d; i++)
+		else 
 		{
-			value[i] = (counter[0][my_word_index] >> (counter_offset[i] << 2)) & 0xF;
+			for (int i = 0; i < d; i++)
+			{
+				value[i] = (counter[0][my_word_index] >> (counter_offset[i] << 2)) & 0xF;
 
-			if (value[i] == 0)
-				continue;
+				if (value[i] == 0)
+					continue;
 
-			counter[0][my_word_index] &= (~((uint64)0xF << (counter_offset[i] << 2)));
-			carry(index[i]);
+				counter[0][my_word_index] &= (~((uint64)0xF << (counter_offset[i] << 2)));
+				carry(index[i]);
+			}
 		}
 		int tmin = frequencyQuery(str, len);
 		string str_key = string(str, len);

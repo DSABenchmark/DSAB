@@ -678,7 +678,7 @@ public:
 		w = tot_memory_in_bytes - filter_size * 12;
 		w = w - capacity * 8;
 		sketch = new myCMCUHeap<4, 3>(w, capacity);
-		bucket_num = filter_size / 12;
+		bucket_num = filter_size / 16;
 		new_count = new int[filter_size];
 		old_count = new int[filter_size];
 		items = new uint32_t[filter_size];

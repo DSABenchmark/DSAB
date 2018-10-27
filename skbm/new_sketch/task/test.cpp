@@ -20,6 +20,7 @@ void frequencyTest(vector<string> & v,unordered_map<string, int> & item2freq, Sk
 }
 void topkTest(vector<string> & v,vector<itemType> & frequentItem,int k,SketchBase& sketch,const int bytesPerStr, string topk_file_name, unordered_map<string, int> & item2idx)
 {
+
     for(auto iter = v.begin();iter!=v.end();iter++){
         sketch.Insert(iter->c_str(), bytesPerStr);
     }
@@ -29,6 +30,7 @@ void topkTest(vector<string> & v,vector<itemType> & frequentItem,int k,SketchBas
     topk_file.open(string(ROOT_DIR)+"experiment/output/"+topk_file_name);
     if(queryResult.size()<k)
     {
+        cout<<queryResult.size()<<" "<<k<<endl;
         cout<<"top-k k is too big!!!"<<endl;
         return;
     }
@@ -37,10 +39,12 @@ void topkTest(vector<string> & v,vector<itemType> & frequentItem,int k,SketchBas
         topk_file << item2idx[frequentItem[i].id] << " " << frequentItem[i].frequency << " " << item2idx[queryResult[i].first] << " " << queryResult[i].second << endl;
     }
     topk_file.close();
+
 }
 void insertionSpeedTest(vector<string> & v,SketchBase& sketch,const int bytesPerStr,string throughput_file_name)
 {
     /*throuput test*/
+
     clock_t start,finish;
     start = clock();
     for(auto iter = v.begin();iter!=v.end();iter++)
@@ -53,4 +57,5 @@ void insertionSpeedTest(vector<string> & v,SketchBase& sketch,const int bytesPer
     throughput_file << v.size() << " ";
     throughput_file << double(finish-start)/CLOCKS_PER_SEC << endl;
     throughput_file.close();
+
 }

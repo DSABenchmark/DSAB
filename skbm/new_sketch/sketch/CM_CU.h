@@ -61,18 +61,16 @@ public:
 	void Insert(const char * str, const int & len)
 	{
 
-		int idx = 0;
-		int min = data[0][hash[0].Run(str, len) % w];
-		for (int i = 1; i < hash_num; ++i)
-		{
-			int curValue = data[i][hash[i].Run(str, len) % w];
-			if (curValue<min)
-			{
-				min = curValue;
-				idx = i;
-			}
+		int tmin = 1 << 30;
+		int idxs[100];
+		for (int i = 0; i < hash_num; ++i) {
+			idxs[i] = hash[i].Run(str, len) % w;
+			tmin = min(data[i][idxs[i]], tmin);
 		}
-		++data[idx][hash[idx].Run(str, len) % w];
+		for (int i = 0; i < hash_num; ++i) {
+			if (data[i][idxs[i]] == tmin)
+				++data[i][idxs[i]];
+		}
 	}
 	int frequencyQuery(const char * str, const int & len)
 	{

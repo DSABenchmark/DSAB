@@ -3,8 +3,7 @@
 #include "SketchBase.h" //DO NOT change this include
 #include "factor.h"//DO NOT change this include
 #include "../hash/hashfunction.h"//If you want to use DSAB-builtin hashfunction must include this
-#include "../hash/cuckoo_hashing.h" //If you want to use DSAB-builtin hashtable must include thiss
-#include "../sketch/CM.h" //If you want to use DSAB-builtin sketch must include this
+#include "../hash/cuckoo_hashing.h" //If you want to use DSAB-builtin hashtable must include this
 /*----optional according to your need----*/
 #include<string>
 #include<iostream>
@@ -166,8 +165,6 @@ public:
 		}
 
 
-
-		word_num = word_num * 4.0 / 5.0;
 		heap_element_num = 0;
 		//for calculating the four hash value constrained in one certain word;
 		word_index_size = 18;
@@ -180,7 +177,6 @@ public:
 		{
 			counter[i] = new uint64[word_num >> i];
 			flag[i] = new bool[counter_num >> i];
-
 			memset(counter[i], 0, sizeof(uint64) * (word_num >> i));
 			memset(flag[i], false, sizeof(bool) * (counter_num >> i));
 		}
@@ -411,7 +407,6 @@ public:
 
         /*----optional according to your need----*/
 		std::vector<std::pair <std::string, int> > topkItem;
-
 		VK * a = new VK[capacity];
 		for (int i = 0; i < capacity; ++i) {
 			a[i] = heap[i];

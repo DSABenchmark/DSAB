@@ -702,7 +702,7 @@ public:
 		w = tot_memory_in_bytes - filter_size * 12;
 		w = w - capacity * 8;
 		sketch = new myCountHeap<4, 3>(w, capacity);
-		bucket_num = filter_size / 12;
+		bucket_num = filter_size / 16;
 		new_count = new int[filter_size];
 		old_count = new int[filter_size];
 		items = new uint32_t[filter_size];
@@ -797,6 +797,7 @@ public:
          /*MUST have this function DO NOT change function head and parameter type */
 
         /*----optional according to your need----*/
+		
 		int * key = new int;
 		memcpy(key, str, 4);
 		const __m128i item = _mm_set1_epi32(*key);
@@ -840,7 +841,7 @@ public:
 		{
 			allTopk[sketchTopK[i].first] = sketchTopK[i].second;
 		}
-	
+		
 		for (int i = 0; i < cur_pos; ++i)
 		{
 			char str[4];
@@ -848,19 +849,20 @@ public:
 			string key(str, 4);
 			allTopk[key] = new_count[i];
 		}
-		
+	
 		std::vector<std::pair <std::string, int> > curItem;
 		for (auto & kv : allTopk)
 		{
 			curItem.emplace_back(kv);
 		}
-		
+
 		sort(curItem.begin(), curItem.end(), AcurCMP);
 		int t = curItem.size() > k ? k : curItem.size();
 		for (int i = 0; i < t; ++i)
 		{
 			topkItem.push_back(curItem[i]);
 		}
+		
 		return topkItem;
         /*----optional according to your need----*/
     }
@@ -870,11 +872,9 @@ public:
 
         /*----optional according to your need----*/
 		sketch = new myCountHeap<4, 3>(w, capacity);
-		bucket_num = filter_size / 16;
 		new_count = new int[filter_size];
 		old_count = new int[filter_size];
 		items = new uint32_t[filter_size];
-
 		memset(items, 0, sizeof(items));
 		memset(new_count, 0, sizeof(new_count));
 		memset(old_count, 0, sizeof(old_count));

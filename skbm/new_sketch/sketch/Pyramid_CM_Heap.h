@@ -199,6 +199,7 @@ public:
 		int value[MAX_HASH_NUM];
 		int index[MAX_HASH_NUM];
 		int counter_offset[MAX_HASH_NUM];
+		
 
 		uint64 hash_value = (bobhash[0]->Run(str, len));
 		int my_word_index = (hash_value & ((1 << word_index_size) - 1)) % word_num;

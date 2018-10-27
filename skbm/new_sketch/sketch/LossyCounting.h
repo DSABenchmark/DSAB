@@ -295,7 +295,6 @@ public:
 		for (int i = 0; i < min(k,result->holdersize); i++)
 		{
 			topkItem.push_back(tmp[i]);
-			cout << i << endl;
 		}
         return topkItem;
         /*----optional according to your need----*/

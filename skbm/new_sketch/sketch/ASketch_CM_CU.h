@@ -460,7 +460,7 @@ public:
         /*----optional according to your need----*/
 		w = tot_memory_in_bytes - filter_size * 12;
 		sketch = new myCMCUSketch<4,1000, 3>(w);
-		bucket_num = filter_size / 12;
+		bucket_num = filter_size / 16;
 		new_count = new int[filter_size];
 		old_count = new int[filter_size];
 		items = new uint32_t[filter_size];
