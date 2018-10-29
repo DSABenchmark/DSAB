@@ -1,5 +1,5 @@
-# PKU Sketch Benchmark
-A benchmark intended for testing the performance of various sketch algorithms for multiple datasets in a simple way.
+# Data Stream Algorithm Benchmark
+A benchmark intended for testing the performance of various data stream algorithms for multiple datasets in a simple way.
 
 ## Requirements
 
