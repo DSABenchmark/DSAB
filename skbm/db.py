@@ -22,7 +22,7 @@ from skbm.generate_dataset import dataset_write
 
 def get_db():
     if 'db' not in g:
-        g.db = MongoClient(current_app.config['DATABASE'])['sketch']
+        g.db = MongoClient(current_app.config['DATABASE'])[cfg.db_name]
     return g.db
 
 def close_db(e=None):
@@ -36,7 +36,7 @@ def init_db():
         dropFlag = input("Drop current database or not? (y/n)")
         if dropFlag == 'y':
             db = get_db()
-            db.client.drop_database('sketch')
+            db.client.drop_database(cfg.db_name)
             print("current database dropped!")
         elif dropFlag=='n':
             print("ignored")
