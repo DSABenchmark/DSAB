@@ -30,6 +30,8 @@ flask init-db
 sh run.sh
 ```
 
+Now, you can type in `<your-ip-address>:8086/skbm/index.html` in your web browser to access the benchmark interface.
+
 ## How to use
 
 To make it more convenient and easier to use, we have built up a website for sketch benchmark. When you visit the home page, there are several modules to configure before running your experiments and drawing graphs.
