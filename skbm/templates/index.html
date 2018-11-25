@@ -30,10 +30,13 @@
       <h2 class="text-center">Please Select One or More Datasets</h2>
       <div class="row">
         <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="">{{ dataset.name }}</button></div>
+        {%endraw%}
+        <div class="col-md-6">
+          <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
+        </div>
+        {%raw%}
       </div>
-      {%endraw%}
-      <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
-      {%raw%}
+      
     </div>
     {%endraw%}
     
@@ -95,9 +98,11 @@
     </div>
     {%endraw%}
 
+    
+
     {%raw%}
-    <div id="graph-container" class="container" ng-controller="graphController as gc">
-      <form> <!-- ng-if="gc.result" -->
+    <!-- <div id="graph-container" class="container" ng-controller="graphController as gc">
+      <form> 
         <div class="form-group">
           <label for="exampleFormControlSelect1">Y axis</label>
           <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
@@ -119,7 +124,7 @@
       </form>
       <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>
       <button type="button" class="btn btn-link btn-lg btn-block"><a ng-href="{{gc.graphLink}}" target="_blank"><div>Get the graph!</div></a></button>
-    </div>
+    </div> -->
     {%endraw%}
 
     {%raw%}

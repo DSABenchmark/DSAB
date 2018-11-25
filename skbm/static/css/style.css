@@ -32,6 +32,13 @@ body > .container {
 	font-size: 1.5em;
 }
 
+#dataset-setup a:hover, #dataset-setup a:focus  {
+	text-decoration: none;
+}
+
+#dataset-setup a{
+	color: white;
+}
 
 .btn-group {
 	margin-bottom: 5px;
