@@ -39,13 +39,13 @@ function SpinnerController($rootScope) {
 
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
-	var dsc = this;
+	var $ctrl = this;
 
 	var promise = requestService.requestList('datasetList');
 	promise.then(function(response){
 		metaService.setDatasetList(response.data);
-		dsc.datasetList = metaService.getDatasetList();
-		console.log(dsc.datasetList);
+		$ctrl.datasetList = metaService.getDatasetList();
+		console.log($ctrl.datasetList);
 		$(function(){
 			$('[data-toggle="popover"]').popover()
 		});
@@ -54,12 +54,12 @@ function datasetController(requestService, metaService){
 		console.log('Error when requesting datasetList');
 	});
 
-	dsc.choose = function(idx) {
-		if(dsc.datasetList[idx].state){
-			dsc.datasetList[idx].state = '';
+	$ctrl.choose = function(idx) {
+		if($ctrl.datasetList[idx].state){
+			$ctrl.datasetList[idx].state = '';
 		}
 		else {
-			dsc.datasetList[idx].state = 'active';
+			$ctrl.datasetList[idx].state = 'active';
 		}
 	};
 }
@@ -78,41 +78,41 @@ function deepCopy(obj){
 
 expController.$inject = ['requestService','metaService'];
 function expController(requestService,metaService) {
-	var ec = this;
+	var $ctrl = this;
 
 	var promise = requestService.requestList('sketchList');
 	promise.then(function(response){
 		metaService.setSketchList(response.data);
-		ec.sketchList = metaService.getSketchList();
+		$ctrl.sketchList = metaService.getSketchList();
 	})
 	.catch(function(error){
 		console.log('Error when requesting sketchList');
 	});
 
-	ec.experimentList = metaService.getExperimentList();
+	$ctrl.experimentList = metaService.getExperimentList();
 
-	ec.writeSketchName = function(sketchIdx, experimentIdx) {
-		ec.experimentList[experimentIdx].sketchName = ec.sketchList[sketchIdx].name;
-		ec.experimentList[experimentIdx].chosenSketch = ec.sketchList[sketchIdx];
+	$ctrl.writeSketchName = function(sketchIdx, experimentIdx) {
+		$ctrl.experimentList[experimentIdx].sketchName = $ctrl.sketchList[sketchIdx].name;
+		$ctrl.experimentList[experimentIdx].chosenSketch = $ctrl.sketchList[sketchIdx];
 	};
-	ec.writeTaskName = function(name, experimentIdx) {
-		ec.experimentList[experimentIdx].taskName = name;
-		var task = ec.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return name==task.name;})
-		ec.experimentList[experimentIdx].params = ec.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
-		for(var i in ec.experimentList[experimentIdx].params){
-			var param = ec.experimentList[experimentIdx].params[i];
+	$ctrl.writeTaskName = function(name, experimentIdx) {
+		$ctrl.experimentList[experimentIdx].taskName = name;
+		var task = $ctrl.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return name==task.name;})
+		$ctrl.experimentList[experimentIdx].params = $ctrl.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
+		for(var i in $ctrl.experimentList[experimentIdx].params){
+			var param = $ctrl.experimentList[experimentIdx].params[i];
 			param.from = "";
 			param.to = "";
 			param.step = "";
 		}
 	};
 
-	ec.addExperiment = function(){
-		var L = ec.experimentList.length;
-		var lastExperiment = ec.experimentList[L-1];
+	$ctrl.addExperiment = function(){
+		var L = $ctrl.experimentList.length;
+		var lastExperiment = $ctrl.experimentList[L-1];
 		console.log(lastExperiment);
-		ec.experimentList.push(deepCopy(lastExperiment));
-		// ec.experimentList.push({
+		$ctrl.experimentList.push(deepCopy(lastExperiment));
+		// $ctrl.experimentList.push({
 		// 	sketchName: "Sketch",
 		// 	taskName: "Task"
 		// });
@@ -121,23 +121,23 @@ function expController(requestService,metaService) {
 
 submitController.$inject = ['requestService','metaService', '$rootScope'];
 function submitController(requestService,metaService, $rootScope) {
-	var sbc = this;
+	var $ctrl = this;
 
-	sbc.submitExperiments = function(){
+	$ctrl.submitExperiments = function(){
 		$rootScope.$broadcast('experiments:running', {on: true});
 
-		sbc.datasetList = metaService.getDatasetList();
-		sbc.experimentList = metaService.getExperimentList();
+		$ctrl.datasetList = metaService.getDatasetList();
+		$ctrl.experimentList = metaService.getExperimentList();
 		var dsList = [];
-		for(var i in sbc.datasetList) {
-			var dataset = sbc.datasetList[i];
+		for(var i in $ctrl.datasetList) {
+			var dataset = $ctrl.datasetList[i];
 			if(dataset.state) dsList.push(dataset.name);
 		}
 		// console.log(dsList);
 		var d = {
 			'flag': "experiment",
 			'datasetList': dsList,
-			'experimentList': sbc.experimentList
+			'experimentList': $ctrl.experimentList
 		};
 		var promise = requestService.postExperiments(d);
 		promise
@@ -155,30 +155,30 @@ function submitController(requestService,metaService, $rootScope) {
 
 graphController.$inject = ['requestService','metaService'];
 function graphController(requestService,metaService){
-	var gc = this;
+	var $ctrl = this;
 
-	gc.result = metaService.getResult();
+	$ctrl.result = metaService.getResult();
 
-	gc.chosen_yaxis = "";
-	gc.chosen_xaxis = "";
-	gc.chosen_multilines = "";
+	$ctrl.chosen_yaxis = "";
+	$ctrl.chosen_xaxis = "";
+	$ctrl.chosen_multilines = "";
 
-	gc.graphLink = "";
+	$ctrl.graphLink = "";
 
-	gc.showSelection = function() {
-		console.log(gc.chosen_yaxis+" "+gc.chosen_xaxis+" "+gc.chosen_multilines);
+	$ctrl.showSelection = function() {
+		console.log($ctrl.chosen_yaxis+" "+$ctrl.chosen_xaxis+" "+$ctrl.chosen_multilines);
 	};
-	gc.draw = function() {
+	$ctrl.draw = function() {
 		var d = {
 			"flag": "graph",
-			"results": gc.result.results,
-			"yaxis": gc.chosen_yaxis,
-			"xaxis": gc.chosen_xaxis,
-			"multilines": gc.chosen_multilines
+			"results": $ctrl.result.results,
+			"yaxis": $ctrl.chosen_yaxis,
+			"xaxis": $ctrl.chosen_xaxis,
+			"multilines": $ctrl.chosen_multilines
 		};
 		var promise = requestService.postGraph(d);
 		promise.then(function(response){
-			gc.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+			$ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
 		}).catch(function(error){
 			console.log(error);
 		});
@@ -187,14 +187,14 @@ function graphController(requestService,metaService){
 
 graphController2.$inject = ['requestService','metaService'];
 function graphController2(requestService,metaService){
-	var gc = this;
+	var $ctrl = this;
 
-	gc.chosen_yaxis = "";
-	gc.xlabel = "";
+	$ctrl.chosen_yaxis = "";
+	$ctrl.xlabel = "";
 
-	gc.result = metaService.getResult();
+	$ctrl.result = metaService.getResult();
 
-	gc.pointList = [
+	$ctrl.pointList = [
 		{
 			"line": "",
 			"index": "",
@@ -202,38 +202,38 @@ function graphController2(requestService,metaService){
 		}
 	];
 
-	gc.num_points = "1";
-	gc.num_lines = "1";
+	$ctrl.num_points = "1";
+	$ctrl.num_lines = "1";
 
-	gc.search = "";
+	$ctrl.search = "";
 
-	gc.addPoint = function() {
-		var L = gc.pointList.length;
-		gc.pointList.push(
+	$ctrl.addPoint = function() {
+		var L = $ctrl.pointList.length;
+		$ctrl.pointList.push(
 			{
-				"line": gc.pointList[L-1]["line"],
-				"index": gc.pointList[L-1]["index"],
-				"experimentIdx": gc.pointList[L-1]["experimentIdx"],
+				"line": $ctrl.pointList[L-1]["line"],
+				"index": $ctrl.pointList[L-1]["index"],
+				"experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
 			}
 		);
 	};
 
-	gc.deletePoint = function() {
+	$ctrl.deletePoint = function() {
 		console.log("hello");
-		gc.pointList.splice(gc.pointList.length-1,1);
+		$ctrl.pointList.splice($ctrl.pointList.length-1,1);
 	};
 
-	gc.draw = function() {
+	$ctrl.draw = function() {
 		var d = {
 			"flag": "graph2",
-			"pointList": gc.pointList,
-			"results": gc.result.results,
-			"yaxis": gc.chosen_yaxis,
-			"xlabel": gc.xlabel
+			"pointList": $ctrl.pointList,
+			"results": $ctrl.result.results,
+			"yaxis": $ctrl.chosen_yaxis,
+			"xlabel": $ctrl.xlabel
 		};
 		var promise = requestService.postGraph2(d);
 		promise.then(function(response){
-			gc.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+			$ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
 		}).catch(function(error){
 			console.log(error);
 		});
