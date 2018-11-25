@@ -11,7 +11,7 @@
     <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/addDataset.js')}}"></script>
 
-    <title>PKU Sketch Benchmark</title>
+    <title>Data Stream Algorithms Benchmark</title>
   </head>
   <body>
     <header>
@@ -19,7 +19,7 @@
         <div class="container">
           <div class="navbar-header">
             <div class="navbar-brand">
-              <a href="index.html"><h1>PKU Sketch Benchmark</h1></a>
+              <a href="index.html"><h1>Data Stream Algorithms Benchmark</h1></a>
             </div><!-- .navbar-brand -->
           </div><!-- .navbar-header -->
         </div><!-- .container -->
@@ -30,7 +30,10 @@
     <div id="addDataset-container" class="container" ng-controller="DatasetGeneratorController as dsgc">
       <form>
         <div class="form-group">
-          <label for="distriName">Distribution Name</label>
+          <div class="row">
+            <div class="col-md-10"><label for="distriName">Distribution Name</label></div>
+            <div class="col-md-2 right"><a href="">Help</a></div>
+          </div>
           <select id="distriName" class="form-control" ng-model="dsgc.distriName">
             <option ng-repeat="name in dsgc.distriNameList">{{name}}</option>
           </select>

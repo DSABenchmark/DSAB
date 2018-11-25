@@ -95,7 +95,16 @@ button > a {
     overflow-x: hidden;
 }
 
+.bottom-right {
+	text-align: right;
+	align-self: center;
+	font-size: 1.2em;
+}
 
+.right {
+	text-align: right;
+	font-size: 1.2em;
+}
 
 
 

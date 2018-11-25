@@ -11,7 +11,7 @@
     <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
-    <title>PKU Sketch Benchmark</title>
+    <title>Data Stream Algorithms Benchmark</title>
   </head>
   <body>
     <header>
@@ -19,7 +19,7 @@
         <div class="container">
           <div class="navbar-header">
             <div class="navbar-brand">
-              <a href="index.html"><h1>PKU Sketch Benchmark</h1></a>
+              <a href="index.html"><h1>Data Stream Algorithms Benchmark</h1></a>
             </div><!-- .navbar-brand -->
           </div><!-- .navbar-header -->
         </div><!-- .container -->
@@ -42,7 +42,9 @@
     
     {%raw%}
     <div id="grid-setup" class="container" ng-controller="expController as ec">
-      <h2 class="text-center">Grid Search Experiments</h2>
+      <div class="row">
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Grid Search Experiments</h2><span class="bottom-right" style="float: right;"><a href="">Help</a></span></div>
+      </div>
       <div class="row" ng-repeat="experiment in ec.experimentList">
         <div class="col-md-12">
           <div class="btn-group" role="group">
@@ -89,7 +91,7 @@
         </div>
         <hr>
       </div>
-      <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="ec.addExperiment()" ng-disabled="ec.running">Add an Experiment</button>
+      <button type="button" style="font-size: 1.1em;" class="btn btn-secondary" ng-click="ec.addExperiment()" ng-disabled="ec.running">Add an Experiment</button>
     </div>
     {%endraw%}
     
@@ -129,6 +131,9 @@
 
     {%raw%}
     <div id="graph-container" class="container" ng-controller="graphController2 as gc">
+      <div class="row">
+        <div class="col-md-12 bottom-right"><a href="">Help</a></div>
+      </div>
       <form> <!-- ng-if="gc.result" -->
         <div class="form-group">
           <label for="exampleFormControlSelect1">Y axis</label>
