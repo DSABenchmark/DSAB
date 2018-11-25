@@ -50,13 +50,14 @@
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{experiment.sketchName}}
               </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" ng-repeat="sk in ec.sketchList" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a>
-                <div class="dropdown-divider"></div>
+              <ul class="dropdown-menu scrollable-menu" role="menu"
+ aria-labelledby="dropdownMenuButton">
+                <li ng-repeat="sk in ec.sketchList"><a class="dropdown-item" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a></li>
+                <li><div class="dropdown-divider"></div></li>
                 {%endraw%}
-                <a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a>
+                <li><a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a></li>
                 {%raw%}
-              </div>
+              </ul>
             </div>
             <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

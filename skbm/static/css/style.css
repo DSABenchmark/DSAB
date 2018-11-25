@@ -89,6 +89,12 @@ button > a {
 	width: 100%;
 }
 
+.scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+}
+
 
 
 
