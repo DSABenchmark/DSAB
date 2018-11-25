@@ -39,29 +39,29 @@ function SpinnerController($rootScope) {
 
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
-	var $ctrl = this;
+    var $ctrl = this;
 
-	var promise = requestService.requestList('datasetList');
-	promise.then(function(response){
-		metaService.setDatasetList(response.data);
-		$ctrl.datasetList = metaService.getDatasetList();
-		console.log($ctrl.datasetList);
-		$(function(){
-			$('[data-toggle="popover"]').popover()
-		});
-	})
-	.catch(function(error){
-		console.log('Error when requesting datasetList');
-	});
+    var promise = requestService.requestList('datasetList');
+    promise.then(function(response){
+        metaService.setDatasetList(response.data);
+        $ctrl.datasetList = metaService.getDatasetList();
+        console.log($ctrl.datasetList);
+        $(function(){
+            $('[data-toggle="popover"]').popover()
+        });
+    })
+    .catch(function(error){
+        console.log('Error when requesting datasetList');
+    });
 
-	$ctrl.choose = function(idx) {
-		if($ctrl.datasetList[idx].state){
-			$ctrl.datasetList[idx].state = '';
-		}
-		else {
-			$ctrl.datasetList[idx].state = 'active';
-		}
-	};
+    $ctrl.choose = function(idx) {
+        if($ctrl.datasetList[idx].state){
+            $ctrl.datasetList[idx].state = '';
+        }
+        else {
+            $ctrl.datasetList[idx].state = 'active';
+        }
+    };
 }
 
 function deepCopy(obj){
@@ -70,258 +70,278 @@ function deepCopy(obj){
     }
     var newobj = {};
     for ( var attr in obj) {
-    	if(attr!=="$$hashKey")
-        	newobj[attr] = deepCopy(obj[attr]);
+        if(attr!=="$$hashKey")
+            newobj[attr] = deepCopy(obj[attr]);
     }
     return newobj;
 }
 
-expController.$inject = ['requestService','metaService'];
-function expController(requestService,metaService) {
-	var $ctrl = this;
+expController.$inject = ['requestService','metaService','$rootScope'];
+function expController(requestService,metaService, $rootScope) {
+    var $ctrl = this;
 
-	var promise = requestService.requestList('sketchList');
-	promise.then(function(response){
-		metaService.setSketchList(response.data);
-		$ctrl.sketchList = metaService.getSketchList();
-	})
-	.catch(function(error){
-		console.log('Error when requesting sketchList');
-	});
+    $ctrl.running = false;
+    var cancelListener = $rootScope.$on('experiments:running', function (event, data) {
+        console.log("Event: ", event);
+        console.log("Data: ", data);
 
-	$ctrl.experimentList = metaService.getExperimentList();
+        if (data.on) {
+          $ctrl.running = true;
+        }
+        else {
+          $ctrl.running = false;
+        }
+    });
+    $ctrl.$onDestroy = function () {
+        cancelListener();
+    };
 
-	$ctrl.writeSketchName = function(sketchIdx, experimentIdx) {
-		$ctrl.experimentList[experimentIdx].sketchName = $ctrl.sketchList[sketchIdx].name;
-		$ctrl.experimentList[experimentIdx].chosenSketch = $ctrl.sketchList[sketchIdx];
-	};
-	$ctrl.writeTaskName = function(name, experimentIdx) {
-		$ctrl.experimentList[experimentIdx].taskName = name;
-		var task = $ctrl.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return name==task.name;})
-		$ctrl.experimentList[experimentIdx].params = $ctrl.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
-		for(var i in $ctrl.experimentList[experimentIdx].params){
-			var param = $ctrl.experimentList[experimentIdx].params[i];
-			param.from = "";
-			param.to = "";
-			param.step = "";
-		}
-	};
+    var promise = requestService.requestList('sketchList');
+    promise.then(function(response){
+        metaService.setSketchList(response.data);
+        $ctrl.sketchList = metaService.getSketchList();
+    })
+    .catch(function(error){
+        console.log('Error when requesting sketchList');
+    });
 
-	$ctrl.addExperiment = function(){
-		var L = $ctrl.experimentList.length;
-		var lastExperiment = $ctrl.experimentList[L-1];
-		console.log(lastExperiment);
-		$ctrl.experimentList.push(deepCopy(lastExperiment));
-		// $ctrl.experimentList.push({
-		// 	sketchName: "Sketch",
-		// 	taskName: "Task"
-		// });
-	}
+    $ctrl.experimentList = metaService.getExperimentList();
+
+    $ctrl.writeSketchName = function(sketchIdx, experimentIdx) {
+        $ctrl.experimentList[experimentIdx].sketchName = $ctrl.sketchList[sketchIdx].name;
+        $ctrl.experimentList[experimentIdx].chosenSketch = $ctrl.sketchList[sketchIdx];
+    };
+    $ctrl.writeTaskName = function(name, experimentIdx) {
+        $ctrl.experimentList[experimentIdx].taskName = name;
+        var task = $ctrl.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return name==task.name;})
+        $ctrl.experimentList[experimentIdx].params = $ctrl.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
+        for(var i in $ctrl.experimentList[experimentIdx].params){
+            var param = $ctrl.experimentList[experimentIdx].params[i];
+            param.from = "";
+            param.to = "";
+            param.step = "";
+        }
+    };
+
+    $ctrl.addExperiment = function(){
+        var L = $ctrl.experimentList.length;
+        var lastExperiment = $ctrl.experimentList[L-1];
+        console.log(lastExperiment);
+        $ctrl.experimentList.push(deepCopy(lastExperiment));
+        // $ctrl.experimentList.push({
+        //  sketchName: "Sketch",
+        //  taskName: "Task"
+        // });
+    }
 }
 
 submitController.$inject = ['requestService','metaService', '$rootScope'];
 function submitController(requestService,metaService, $rootScope) {
-	var $ctrl = this;
+    var $ctrl = this;
 
-	$ctrl.submitExperiments = function(){
-		$rootScope.$broadcast('experiments:running', {on: true});
+    $ctrl.running = false;
 
-		$ctrl.datasetList = metaService.getDatasetList();
-		$ctrl.experimentList = metaService.getExperimentList();
-		var dsList = [];
-		for(var i in $ctrl.datasetList) {
-			var dataset = $ctrl.datasetList[i];
-			if(dataset.state) dsList.push(dataset.name);
-		}
-		// console.log(dsList);
-		var d = {
-			'flag': "experiment",
-			'datasetList': dsList,
-			'experimentList': $ctrl.experimentList
-		};
-		var promise = requestService.postExperiments(d);
-		promise
-		.then(function(response){
-			metaService.setResult(response.data);
-		})
-		.catch(function(error){
-			console.log(error);
-		})
-		.finally(function () {
-			$rootScope.$broadcast('experiments:running', {on: false});
-		});
-	};
+    $ctrl.submitExperiments = function(){
+        $rootScope.$broadcast('experiments:running', {on: true});
+        $ctrl.running = true;
+
+        $ctrl.datasetList = metaService.getDatasetList();
+        $ctrl.experimentList = metaService.getExperimentList();
+        var dsList = [];
+        for(var i in $ctrl.datasetList) {
+            var dataset = $ctrl.datasetList[i];
+            if(dataset.state) dsList.push(dataset.name);
+        }
+        // console.log(dsList);
+        var d = {
+            'flag': "experiment",
+            'datasetList': dsList,
+            'experimentList': $ctrl.experimentList
+        };
+        var promise = requestService.postExperiments(d);
+        promise
+        .then(function(response){
+            metaService.setResult(response.data);
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+        .finally(function () {
+            $rootScope.$broadcast('experiments:running', {on: false});
+            $ctrl.running = false;
+        });
+    };
 }
 
 graphController.$inject = ['requestService','metaService'];
 function graphController(requestService,metaService){
-	var $ctrl = this;
+    var $ctrl = this;
 
-	$ctrl.result = metaService.getResult();
+    $ctrl.result = metaService.getResult();
 
-	$ctrl.chosen_yaxis = "";
-	$ctrl.chosen_xaxis = "";
-	$ctrl.chosen_multilines = "";
+    $ctrl.chosen_yaxis = "";
+    $ctrl.chosen_xaxis = "";
+    $ctrl.chosen_multilines = "";
 
-	$ctrl.graphLink = "";
+    $ctrl.graphLink = "";
 
-	$ctrl.showSelection = function() {
-		console.log($ctrl.chosen_yaxis+" "+$ctrl.chosen_xaxis+" "+$ctrl.chosen_multilines);
-	};
-	$ctrl.draw = function() {
-		var d = {
-			"flag": "graph",
-			"results": $ctrl.result.results,
-			"yaxis": $ctrl.chosen_yaxis,
-			"xaxis": $ctrl.chosen_xaxis,
-			"multilines": $ctrl.chosen_multilines
-		};
-		var promise = requestService.postGraph(d);
-		promise.then(function(response){
-			$ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
-		}).catch(function(error){
-			console.log(error);
-		});
-	}
+    $ctrl.showSelection = function() {
+        console.log($ctrl.chosen_yaxis+" "+$ctrl.chosen_xaxis+" "+$ctrl.chosen_multilines);
+    };
+    $ctrl.draw = function() {
+        var d = {
+            "flag": "graph",
+            "results": $ctrl.result.results,
+            "yaxis": $ctrl.chosen_yaxis,
+            "xaxis": $ctrl.chosen_xaxis,
+            "multilines": $ctrl.chosen_multilines
+        };
+        var promise = requestService.postGraph(d);
+        promise.then(function(response){
+            $ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+        }).catch(function(error){
+            console.log(error);
+        });
+    }
 }
 
 graphController2.$inject = ['requestService','metaService'];
 function graphController2(requestService,metaService){
-	var $ctrl = this;
+    var $ctrl = this;
 
-	$ctrl.chosen_yaxis = "";
-	$ctrl.xlabel = "";
+    $ctrl.chosen_yaxis = "";
+    $ctrl.xlabel = "";
 
-	$ctrl.result = metaService.getResult();
+    $ctrl.result = metaService.getResult();
 
-	$ctrl.pointList = [
-		{
-			"line": "",
-			"index": "",
-			"experimentIdx": "",
-		}
-	];
+    $ctrl.pointList = [
+        {
+            "line": "",
+            "index": "",
+            "experimentIdx": "",
+        }
+    ];
 
-	$ctrl.num_points = "1";
-	$ctrl.num_lines = "1";
+    $ctrl.num_points = "1";
+    $ctrl.num_lines = "1";
 
-	$ctrl.search = "";
+    $ctrl.search = "";
 
-	$ctrl.addPoint = function() {
-		var L = $ctrl.pointList.length;
-		$ctrl.pointList.push(
-			{
-				"line": $ctrl.pointList[L-1]["line"],
-				"index": $ctrl.pointList[L-1]["index"],
-				"experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
-			}
-		);
-	};
+    $ctrl.addPoint = function() {
+        var L = $ctrl.pointList.length;
+        $ctrl.pointList.push(
+            {
+                "line": $ctrl.pointList[L-1]["line"],
+                "index": $ctrl.pointList[L-1]["index"],
+                "experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
+            }
+        );
+    };
 
-	$ctrl.deletePoint = function() {
-		console.log("hello");
-		$ctrl.pointList.splice($ctrl.pointList.length-1,1);
-	};
+    $ctrl.deletePoint = function() {
+        console.log("hello");
+        $ctrl.pointList.splice($ctrl.pointList.length-1,1);
+    };
 
-	$ctrl.draw = function() {
-		var d = {
-			"flag": "graph2",
-			"pointList": $ctrl.pointList,
-			"results": $ctrl.result.results,
-			"yaxis": $ctrl.chosen_yaxis,
-			"xlabel": $ctrl.xlabel
-		};
-		var promise = requestService.postGraph2(d);
-		promise.then(function(response){
-			$ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
-		}).catch(function(error){
-			console.log(error);
-		});
-	};
+    $ctrl.draw = function() {
+        var d = {
+            "flag": "graph2",
+            "pointList": $ctrl.pointList,
+            "results": $ctrl.result.results,
+            "yaxis": $ctrl.chosen_yaxis,
+            "xlabel": $ctrl.xlabel
+        };
+        var promise = requestService.postGraph2(d);
+        promise.then(function(response){
+            $ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+        }).catch(function(error){
+            console.log(error);
+        });
+    };
 }
 
 
 function metaService() {
-	var service = this;
+    var service = this;
 
-	var datasetList = [];
-	var sketchList = [];
-	var experimentList = [
-		{
-			sketchName: "Sketch",
-			taskName: "Task"
-		}
-	];
-	var result = {};
-	service.getDatasetList = function(){return datasetList};
-	service.getSketchList = function(){return sketchList};
-	service.getExperimentList = function(){return experimentList};
-	service.getResult = function(){return result};
-	service.setDatasetList = function(data){datasetList = data;};
-	service.setSketchList = function(data){sketchList = data;};
-	service.setResult = function(data){
-		for(var key in data){
-			result[key] = data[key];
-		}
-		console.log(result);
-	};
+    var datasetList = [];
+    var sketchList = [];
+    var experimentList = [
+        {
+            sketchName: "Sketch",
+            taskName: "Task"
+        }
+    ];
+    var result = {};
+    service.getDatasetList = function(){return datasetList};
+    service.getSketchList = function(){return sketchList};
+    service.getExperimentList = function(){return experimentList};
+    service.getResult = function(){return result};
+    service.setDatasetList = function(data){datasetList = data;};
+    service.setSketchList = function(data){sketchList = data;};
+    service.setResult = function(data){
+        for(var key in data){
+            result[key] = data[key];
+        }
+        console.log(result);
+    };
 }
 
 requestService.$inject = ['$http','baseURL'];
 function requestService($http,baseURL) {
-	var service = this;
+    var service = this;
 
-	service.requestList = function(listname) {
-		var response = $http({
-			method: 'GET',
-			url: baseURL,
-			params: {
-				get: listname
-			}
-		});
-		return response
-	};
+    service.requestList = function(listname) {
+        var response = $http({
+            method: 'GET',
+            url: baseURL,
+            params: {
+                get: listname
+            }
+        });
+        return response
+    };
 
-	service.postExperiments = function(d) {
-		var response = $http({
-			method: 'POST',
-			url: baseURL,
-			data: d
-		});
-		return response;
-	};
+    service.postExperiments = function(d) {
+        var response = $http({
+            method: 'POST',
+            url: baseURL,
+            data: d
+        });
+        return response;
+    };
 
-	service.postGraph = function(d) {
-		var response = $http({
-			method: 'POST',
-			url: baseURL,
-			data: d
-		});
-		return response;
-	};
+    service.postGraph = function(d) {
+        var response = $http({
+            method: 'POST',
+            url: baseURL,
+            data: d
+        });
+        return response;
+    };
 
-	service.postGraph2 = function(d) {
-		var response = $http({
-			method: "POST",
-			url: baseURL,
-			data: d
-		});
-		return response;
-	};
+    service.postGraph2 = function(d) {
+        var response = $http({
+            method: "POST",
+            url: baseURL,
+            data: d
+        });
+        return response;
+    };
 }
 
 function incrementSteps(steps,grids){
-	for(var i in steps){
-		var step = steps[i];
-		var grid = grids[i];
-		if(step < grid){
-			steps[i]++;
-			return;
-		}
-		else {
-			continue;
-		}
-	}
+    for(var i in steps){
+        var step = steps[i];
+        var grid = grids[i];
+        if(step < grid){
+            steps[i]++;
+            return;
+        }
+        else {
+            continue;
+        }
+    }
 }
 
 

@@ -88,13 +88,13 @@
         </div>
         <hr>
       </div>
-      <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="ec.addExperiment()">Add an Experiment</button>
+      <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="ec.addExperiment()" ng-disabled="ec.running">Add an Experiment</button>
     </div>
     {%endraw%}
     
     {%raw%}
     <div id="submit-container" class="container" ng-controller="submitController as sbc">
-      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()">Ready to Go!</button>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()" ng-disabled="sbc.running">Ready to Go!</button>
       <div align="center"><loading-spinner></loading-spinner></div>
     </div>
     {%endraw%}
