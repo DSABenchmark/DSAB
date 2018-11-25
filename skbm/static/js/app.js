@@ -9,7 +9,33 @@ angular.module('SketchApp', [])
 .controller('graphController2', graphController2)
 .service('metaService', metaService)
 .service('requestService', requestService)
-.constant('baseURL', "http://"+document.location.host+"/skbm/api");
+.constant('baseURL', "http://"+document.location.host+"/skbm/api")
+.component('loadingSpinner', {
+  template: '<img ng-if="$ctrl.showSpinner" class="loading-icon" src="../static/flickr-loading.gif" alt="loading">',
+  controller: SpinnerController
+});
+
+SpinnerController.$inject = ['$rootScope']
+function SpinnerController($rootScope) {
+  var $ctrl = this;
+
+  var cancelListener = $rootScope.$on('experiments:running', function (event, data) {
+    console.log("Event: ", event);
+    console.log("Data: ", data);
+
+    if (data.on) {
+      $ctrl.showSpinner = true;
+    }
+    else {
+      $ctrl.showSpinner = false;
+    }
+  });
+
+  $ctrl.$onDestroy = function () {
+    cancelListener();
+  };
+
+};
 
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
@@ -93,55 +119,15 @@ function expController(requestService,metaService) {
 	}
 }
 
-submitController.$inject = ['requestService','metaService'];
-function submitController(requestService,metaService) {
+submitController.$inject = ['requestService','metaService', '$rootScope'];
+function submitController(requestService,metaService, $rootScope) {
 	var sbc = this;
 
 	sbc.submitExperiments = function(){
+		$rootScope.$broadcast('experiments:running', {on: true});
+
 		sbc.datasetList = metaService.getDatasetList();
 		sbc.experimentList = metaService.getExperimentList();
-		// get all the experiments
-		// console.log(sbc.datasetList);
-		// console.log(sbc.experimentList);
-		// var experiments = []
-		// for(var i in sbc.datasetList){
-		// 	var dataset = sbc.datasetList[i];
-		// 	if(dataset.state){
-		// 		console.log(dataset.name);
-		// 		for(var j in sbc.experimentList){
-		// 			var row = sbc.experimentList[j];
-		// 			var params = row.params;
-		// 			var steps = [];
-		// 			var grids = []
-		// 			var totSteps = 1;
-		// 			for(var k=0;k<params.length;k++){
-		// 				steps.push(0);
-		// 				var param = params[k];
-		// 				var tmp = parseInt((param.to-param.from)/param.step);
-		// 				totSteps *= tmp+1;
-		// 				grids.push(tmp);
-		// 			}
-		// 			while(totSteps>0){
-		// 				totSteps--;
-		// 				var arg = {
-		// 							datasetName: dataset.name,
-		// 							sketchName: row.sketchName,
-		// 							taskName: row.taskName
-		// 						};
-		// 				for(var s in steps){
-		// 					var param = params[s];
-		// 					var v = steps[s] * param.step + param.from;
-		// 					arg[param.field] = v;
-		// 				}
-		// 				experiments.push(arg);
-		// 				incrementSteps(steps,grids);
-		// 			}
-
-					
-		// 		}
-		// 	}
-		// }
-		// console.log(experiments);
 		var dsList = [];
 		for(var i in sbc.datasetList) {
 			var dataset = sbc.datasetList[i];
@@ -154,11 +140,15 @@ function submitController(requestService,metaService) {
 			'experimentList': sbc.experimentList
 		};
 		var promise = requestService.postExperiments(d);
-		promise.then(function(response){
+		promise
+		.then(function(response){
 			metaService.setResult(response.data);
 		})
 		.catch(function(error){
 			console.log(error);
+		})
+		.finally(function () {
+			$rootScope.$broadcast('experiments:running', {on: false});
 		});
 	};
 }
