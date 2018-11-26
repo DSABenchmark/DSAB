@@ -16,6 +16,7 @@ from pprint import pprint
 import json
 from skbm.config import cfg
 from os import path as osp
+import os
 import subprocess
 import numpy as np
 from skbm.generate_dataset import dataset_write
