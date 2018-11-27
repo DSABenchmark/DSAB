@@ -14,6 +14,9 @@ header > nav > .container {
 header {
 	margin-bottom: 50px;
 }
+header h1 {
+	font-size: 1.5em;
+}
 
 body > .container {
 	background-color: #eee;
@@ -32,6 +35,13 @@ body > .container {
 	font-size: 1.5em;
 }
 
+#dataset-setup a:hover, #dataset-setup a:focus  {
+	text-decoration: none;
+}
+
+#dataset-setup a{
+	color: white;
+}
 
 .btn-group {
 	margin-bottom: 5px;
@@ -82,7 +92,22 @@ button > a {
 	width: 100%;
 }
 
+.scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+}
 
+.bottom-right {
+	text-align: right;
+	align-self: center;
+	font-size: 1.2em;
+}
+
+.right {
+	text-align: right;
+	font-size: 1.2em;
+}
 
 
 

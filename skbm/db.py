@@ -16,13 +16,15 @@ from pprint import pprint
 import json
 from skbm.config import cfg
 from os import path as osp
+import os
 import subprocess
 import numpy as np
 from skbm.generate_dataset import dataset_write
+from pathlib import Path
 
 def get_db():
     if 'db' not in g:
-        g.db = MongoClient(current_app.config['DATABASE'])['sketch']
+        g.db = MongoClient(current_app.config['DATABASE'])[cfg.db_name]
     return g.db
 
 def close_db(e=None):
@@ -36,7 +38,7 @@ def init_db():
         dropFlag = input("Drop current database or not? (y/n)")
         if dropFlag == 'y':
             db = get_db()
-            db.client.drop_database('sketch')
+            db.client.drop_database(cfg.db_name)
             print("current database dropped!")
         elif dropFlag=='n':
             print("ignored")
@@ -47,6 +49,7 @@ def init_db():
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
+    rewrite_root_dir()
     init_db()
     init_existing_dataset()
     init_existing_sketch()
@@ -55,6 +58,16 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+def rewrite_root_dir():
+    lst = ['main.cpp','test.cpp']
+    for item in lst:
+        file_path = Path(cfg.PATH.root_dir) / 'skbm/new_sketch/task' / item
+        text = file_path.read_text()
+        text = text.replace('#define ROOT_DIR "/root/pku-sketch-benchmark/"', '#define ROOT_DIR "{}/"'.format(str(cfg.PATH.root_dir)))
+        with open(str(file_path), 'w') as hd:
+            hd.write(text)
+        # print('Rewrite root dir in file {}'.format(str(file_path)))
 
 def init_existing_dataset():
     dropFlag = 'a'
@@ -95,6 +108,8 @@ def init_existing_sketch():
             db = get_db()
             db.drop_collection('sketch_info')
             sketchList = json.loads(open(osp.join(cfg.PATH.root_dir,'staticSketchList.json')).read())
+            for dct in sketchList:
+                dct['path'] = str(Path(cfg.PATH.root_dir) / dct['path'])
             msg = db.sketch_info.insert_many(sketchList)
             # print(msg)
             print('Initiated existing sketches!')

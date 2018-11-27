@@ -11,7 +11,7 @@
     <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/addSketch.js')}}"></script>
 
-    <title>PKU Sketch Benchmark</title>
+    <title>Data Stream Algorithms Benchmark</title>
   </head>
   <body>
     <header>
@@ -19,9 +19,10 @@
         <div class="container">
           <div class="navbar-header">
             <div class="navbar-brand">
-              <a href="index.html"><h1>PKU Sketch Benchmark</h1></a>
+              <a href="index.html"><h1>Data Stream Algorithms Benchmark</h1></a>
             </div><!-- .navbar-brand -->
           </div><!-- .navbar-header -->
+          <div><a href="">Github</a></div>
         </div><!-- .container -->
       </nav><!-- #header-nav -->
     </header>
@@ -30,7 +31,10 @@
     <div id="addSketch-container" class="container" ng-controller="scriptController as sc">
       <form>
         <div class="form-group">
-          <label for="sketchName"><h2>Sketch Name</h2></label>
+          <div class="row">
+            <div class="col-md-10"><label for="sketchName"><h2>Sketch Name</h2></label></div>
+            <div class="col-md-2 bottom-right"><a href="">Help</a></div>
+          </div>
           <input type="text" class="form-control" id="sketchName" aria-describedby="nameHelp" placeholder="Enter the name of your sketch" ng-model="sc.sketchName">
           <small id="nameHelp" class="form-text text-muted">Your sketch name should be in form of "*Sketch"</small>
         </div>
@@ -56,7 +60,10 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="exampleFormControlTextarea1"><h2>Sketch Code</h2></label>
+          <div class="row">
+            <div class="col-md-10"><label for="exampleFormControlTextarea1"><h2>Sketch Code</h2></label></div>
+            <div class="col-md-2 bottom-right"><a href="">Help</a></div>
+          </div>
           <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Place your code here" ng-model="sc.codeText"></textarea>
         </div>
         <button type="submit" class="btn btn-primary btn-block" ng-click="sc.submitCode()">Submit and Compile</button>

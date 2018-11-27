@@ -24,6 +24,8 @@ Path(__C.PATH.graph_dir).mkdir(exist_ok=True, parents=True)
 
 __C.bytePerStr = 4
 
+__C.db_name = 'sketch_test'
+
 __C.TEMP = edict()
 __C.TEMP.tasks = [
 	                {

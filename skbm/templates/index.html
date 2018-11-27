@@ -11,7 +11,7 @@
     <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
-    <title>PKU Sketch Benchmark</title>
+    <title>Data Stream Algorithms Benchmark</title>
   </head>
   <body>
     <header>
@@ -19,9 +19,10 @@
         <div class="container">
           <div class="navbar-header">
             <div class="navbar-brand">
-              <a href="index.html"><h1>PKU Sketch Benchmark</h1></a>
+              <a href="index.html"><h1>Data Stream Algorithms Benchmark</h1></a>
             </div><!-- .navbar-brand -->
           </div><!-- .navbar-header -->
+          <div><a href="https://github.com/DSABenchmark/DSAB">Github</a></div>
         </div><!-- .container -->
       </nav><!-- #header-nav -->
     </header>
@@ -30,16 +31,21 @@
       <h2 class="text-center">Please Select One or More Datasets</h2>
       <div class="row">
         <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="">{{ dataset.name }}</button></div>
+        {%endraw%}
+        <div class="col-md-6">
+          <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
+        </div>
+        {%raw%}
       </div>
-      {%endraw%}
-      <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
-      {%raw%}
+      
     </div>
     {%endraw%}
     
     {%raw%}
     <div id="grid-setup" class="container" ng-controller="expController as ec">
-      <h2 class="text-center">Grid Search Experiments</h2>
+      <div class="row">
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Grid Search Experiments</h2><span class="bottom-right" style="float: right;"><a href="">Help</a></span></div>
+      </div>
       <div class="row" ng-repeat="experiment in ec.experimentList">
         <div class="col-md-12">
           <div class="btn-group" role="group">
@@ -47,13 +53,14 @@
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{experiment.sketchName}}
               </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" ng-repeat="sk in ec.sketchList" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a>
-                <div class="dropdown-divider"></div>
+              <ul class="dropdown-menu scrollable-menu" role="menu"
+ aria-labelledby="dropdownMenuButton">
+                <li ng-repeat="sk in ec.sketchList"><a class="dropdown-item" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a></li>
+                <li><div class="dropdown-divider"></div></li>
                 {%endraw%}
-                <a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a>
+                <li><a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a></li>
                 {%raw%}
-              </div>
+              </ul>
             </div>
             <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -85,19 +92,20 @@
         </div>
         <hr>
       </div>
-      <button type="button" class="btn btn-secondary btn-lg btn-block" ng-click="ec.addExperiment()">Add an Experiment</button>
+      <button type="button" style="font-size: 1.1em;" class="btn btn-secondary" ng-click="ec.addExperiment()" ng-disabled="ec.running">Add an Experiment</button>
     </div>
     {%endraw%}
     
     {%raw%}
     <div id="submit-container" class="container" ng-controller="submitController as sbc">
-      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()">Ready to Go!</button>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="sbc.submitExperiments()" ng-disabled="sbc.running">Ready to Go!</button>
+      <div align="center"><loading-spinner></loading-spinner></div>
     </div>
     {%endraw%}
 
     {%raw%}
-    <div id="graph-container" class="container" ng-controller="graphController as gc">
-      <form> <!-- ng-if="gc.result" -->
+    <!-- <div id="graph-container" class="container" ng-controller="graphController as gc">
+      <form> 
         <div class="form-group">
           <label for="exampleFormControlSelect1">Y axis</label>
           <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
@@ -119,11 +127,14 @@
       </form>
       <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="gc.draw()">Draw</button>
       <button type="button" class="btn btn-link btn-lg btn-block"><a ng-href="{{gc.graphLink}}" target="_blank"><div>Get the graph!</div></a></button>
-    </div>
+    </div> -->
     {%endraw%}
 
     {%raw%}
     <div id="graph-container" class="container" ng-controller="graphController2 as gc">
+      <div class="row">
+        <div class="col-md-12 bottom-right"><a href="">Help</a></div>
+      </div>
       <form> <!-- ng-if="gc.result" -->
         <div class="form-group">
           <label for="exampleFormControlSelect1">Y axis</label>

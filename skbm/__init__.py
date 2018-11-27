@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from skbm.config import cfg
 
 
 def create_app(test_config=None):
@@ -8,7 +9,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE="mongodb://127.0.0.1:27017/sketch",
+        DATABASE="mongodb://127.0.0.1:27017/" + cfg.db_name,
         # PIN="000000"
     )
 
