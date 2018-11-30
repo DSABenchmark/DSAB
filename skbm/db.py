@@ -22,6 +22,29 @@ import numpy as np
 from skbm.generate_dataset import dataset_write
 from pathlib import Path
 
+def InteractiveIf(msg=None, no_func=None, divider=True):
+    if msg is None:
+        msg = "Do you want to execute the function?"
+    if no_func is None:
+        def temp_func():
+            print("Ignored!")
+        no_func = temp_func
+    def mainDecorator(yes_func):
+        def wrapper(*args, **kwargs):
+            if divider:
+                print('-'*20)
+            flag = 'a'
+            while flag not in ['y','n']:
+                flag = input("{} (y/n)".format(msg))
+                if flag == 'y':
+                    yes_func(*args, **kwargs)
+                elif flag=='n':
+                    no_func(*args, **kwargs)
+                else:
+                    print("invalid input: {}".format(flag))
+        return wrapper
+    return mainDecorator
+
 def get_db():
     if 'db' not in g:
         g.db = MongoClient(current_app.config['DATABASE'])[cfg.db_name]
@@ -69,6 +92,23 @@ def rewrite_root_dir():
             hd.write(text)
         # print('Rewrite root dir in file {}'.format(str(file_path)))
 
+@InteractiveIf(msg="This is not a default dataset file. Do you want to remove this dataset?", divider=False)
+def remove_one_dataset(path):
+    os.remove(str(path))
+
+@InteractiveIf(msg="Do you want to download this file?", divider=False)
+def download_one_dataset(name):
+    path = Path(cfg.PATH.dataset_dir) / name
+    import subprocess
+    print('Start downloading from cloud server...')
+    p = subprocess.Popen(' '.join(['wget','-O',str(path),"http://dsabdatasets.oss-cn-beijing.aliyuncs.com/{}".format(name)]),shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    tup = p.communicate()
+    if p.poll():
+        errMessage = tup[1].decode()
+        print(errMessage)
+        raise Exception
+    print('{} was downloaded to {}'.format(name, str(path)))
+
 def init_existing_dataset():
     dropFlag = 'a'
     while dropFlag not in ['y','n']:
@@ -78,20 +118,32 @@ def init_existing_dataset():
             db.drop_collection('dataset_info')
             from pathlib import Path
             iter_dataset = Path(cfg.PATH.dataset_dir).glob('*.dat')
-            default_dslist = json.loads(open(cfg.PATH.defaultDatasetFile).read())['datasetArray']
-            default_dct = {dct['name']: dct for dct in default_dslist}
+            default_dct = json.loads(open(cfg.PATH.defaultDatasetFile).read())
             lst = []
             for d in iter_dataset:
-                info = default_dct[d.name]
-                lst.append({
-                        'name': d.name,
-                        'path': str(d),
-                        'bytePerItem': int(info['bytePerItem']),
-                        'distinctNum': info['distinctNum'],
-                        'maxFrequency': int(info['maxFrequency']),
-                        'minFrequency': int(info['minFrequency']),
-                        'totalNum': int(info['totalNum']),
-                    })
+                if d.name not in default_dct:
+                    print(d.name)
+                    remove_one_dataset(d)
+            for name in default_dct:
+                path = Path(cfg.PATH.dataset_dir) / name
+                if not path.exists():
+                    print('{} not exists!'.format(name))
+                    download_one_dataset(name)
+                info = default_dct[name]
+                info['path'] = str(path)
+                info['bytePerItem'] = 4
+                lst.append(info)
+            # for d in iter_dataset:
+            #     info = default_dct[d.name]
+            #     lst.append({
+            #             'name': d.name,
+            #             'path': str(d),
+            #             'bytePerItem': int(info['bytePerItem']),
+            #             'distinctNum': info['distinctNum'],
+            #             'maxFrequency': int(info['maxFrequency']),
+            #             'minFrequency': int(info['minFrequency']),
+            #             'totalNum': int(info['totalNum']),
+            #         })
             db.dataset_info.insert_many(lst)
             print('Initiated existing datasets!')
         elif dropFlag=='n':
@@ -281,8 +333,6 @@ def generate_dataset(distriName,totalNum,distinctNum,param1,param2=None):
         }
     db.dataset_info.insert_one(obj.copy())
     return obj
-
-
 
 
 
