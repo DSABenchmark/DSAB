@@ -56,8 +56,7 @@
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{experiment.sketchName}}
               </button>
-              <ul class="dropdown-menu scrollable-menu" role="menu"
- aria-labelledby="dropdownMenuButton">
+              <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="dropdownMenuButton">
                 <li ng-repeat="sk in ec.sketchList"><a class="dropdown-item" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a></li>
                 <li><div class="dropdown-divider"></div></li>
                 {%endraw%}
@@ -73,6 +72,7 @@
                 <a class="dropdown-item" ng-repeat="task in experiment.chosenSketch.tasks" ng-click="ec.writeTaskName(task.name, $parent.$index)">{{task.name}}</a>
               </div>
             </div>
+            <button type="button" class="btn btn-danger" ng-click="ec.remove($index)">remove</button>
           </div>
         </div>
         <div class="col-md-12">

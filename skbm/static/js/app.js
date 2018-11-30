@@ -147,6 +147,11 @@ function expController(requestService,metaService, $rootScope) {
         //  taskName: "Task"
         // });
     }
+
+    $ctrl.remove = function(idx) {
+        console.log("remove",idx);
+        $ctrl.experimentList.splice(idx, 1);
+    }
 }
 
 submitController.$inject = ['requestService','metaService', '$rootScope'];
