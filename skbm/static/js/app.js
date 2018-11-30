@@ -139,13 +139,17 @@ function expController(requestService,metaService, $rootScope) {
 
     $ctrl.addExperiment = function(){
         var L = $ctrl.experimentList.length;
-        var lastExperiment = $ctrl.experimentList[L-1];
-        console.log(lastExperiment);
-        $ctrl.experimentList.push(deepCopy(lastExperiment));
-        // $ctrl.experimentList.push({
-        //  sketchName: "Sketch",
-        //  taskName: "Task"
-        // });
+        if(L==0){
+            $ctrl.experimentList.push({
+             sketchName: "Sketch",
+             taskName: "Task"
+            });
+        }
+        else {
+            var lastExperiment = $ctrl.experimentList[L-1];
+            console.log(lastExperiment);
+            $ctrl.experimentList.push(deepCopy(lastExperiment));
+        }
     }
 
     $ctrl.remove = function(idx) {
