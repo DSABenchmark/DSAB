@@ -34,9 +34,11 @@ Now, you can type in `<your-ip-address>:8086/skbm/index.html` in your web browse
 
 ## How to use
 
-To make it more convenient and easier to use, we have built up a website for sketch benchmark. When you visit the home page, there are several modules to configure before running your experiments and drawing graphs.
+To make it more convenient and easier to use, we have built up a website for datastreams algorithms benchmarking. When you visit the home page, there are several modules to configure before running experiments and drawing graphs.
 
-The first module is the dataset module. You need to choose one or more network datasets and the selected datasets would be fed to all experiment configuration respectively. Though there are some existing datasets available, you can click the button at the bottom of this module to generate your own dataset. In the dataset generating page, you need to choose a distribution and fill out the form and submit the request to generate a dataset. Once you have done, you can go back to the home page and the generated dataset should be shown in the first module. 
+The first module is the dataset module. You need to choose one or more network datasets, and the selected datasets would be fed to each experiments of different parameter settings respectively. When you hover over a dataset button, the info about this dataset would pop out. Once you clicked the dataset, the corresponding button would turn to grey.
+
+Though there are some existing datasets available, you can click the button at the bottom of this module to generate your own dataset. In the dataset generating page, you need to choose a distribution and fill out the form and submit the request to generate a dataset. Once you have done, you can go back to the home page and the generated dataset should be shown in the first module. 
 
 The main function of the benchmark lies in the second module, where you can perform grid search experiments over multiple parameters. Here we assume an experiment is defined by a particular sketch combined with a specific task. Within each experiment setup, you should first choose a sketch and a task, and then the corresponding parameters would have shown below. Each row defines a value range of a parameter. If you only need a single value for a parameter, you can only fill out the “from” box and leave the other two alone. If you want to perform multiple experiments, click the button at the bottom of this module. 
 
@@ -44,7 +46,7 @@ To test your own sketch algorithm, you can upload your own sketch code by clicki
 
 After configuring the first two modules, click "ready to go" to start running experiments at the back ends. This may take some time, depending on your configuration. 
 
-The experimental results will send back to the front end, and the user can visualize the results by using last two modules. Both two modules are used for drawing high quality graphs, but they have different logic. When the configuration is simple and only one or two hyperparaments change (i.e. different datasets and different hash_num), the user can use the first module. Y axis indicates the metric you want to show. "X axis" and "multilines" are two varied hyperparameters. Click the "Draw" button and then the "get the graph" link, and you will see the graph in another link. The second graph module requires specific configuration for each point. Y axis in the second module is the same as the first module. X label is the name of x axis in the graph. For each point, you need to specify which line it belongs to, the position of the point in the x axis, and the index of the experiment that you want to draw value from. All the experiemnts are shown below the search box, and you can search particular experiment by typing keywords. 
+The experimental results will send back to the front end, and the user can visualize the results by using *Graph* module. This module requires specific configuration for each point. Y axis in the second module is the same as the first module. X label is the name of x axis in the graph. For each point, you need to specify which line it belongs to, the position of the point in the x axis, and the index of the experiment that you want to draw value from. All the experiemnts are shown below the search box, and you can search particular experiment by typing keywords. 
 
 
 
