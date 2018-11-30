@@ -28,7 +28,10 @@
     </header>
     {%raw%}
     <div id="dataset-setup" class="container" ng-controller="datasetController as dsc">
-      <h2 class="text-center">Please Select One or More Datasets</h2>
+      <div class="row">
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Please Select One or More Datasets</h2><span class="bottom-right" style="float: right;"><a href="">Help</a></span></div>
+      </div>
+      <!-- <h2 class="text-center">Please Select One or More Datasets</h2> -->
       <div class="row">
         <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="{{dataset.html}}">{{ dataset.name }}</button></div>
         {%endraw%}

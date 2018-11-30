@@ -35,11 +35,10 @@ body > .container {
 	font-size: 1.5em;
 }
 
-#dataset-setup a:hover, #dataset-setup a:focus  {
+#dataset-setup button a:hover, #dataset-setup button a:focus  {
 	text-decoration: none;
 }
-
-#dataset-setup a{
+#dataset-setup button a{
 	color: white;
 }
 
