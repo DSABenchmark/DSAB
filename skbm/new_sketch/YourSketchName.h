@@ -36,12 +36,12 @@ bool erase(char * key)
 
 /*----SketchBase virtual function must be finished----*/
 /*
-virtual ~SketchBase();
-virtual void parameterSet(const string& parameterName, double  parameterValue)=0;
-virtual init() = 0;
-virtual void Insert(const uint8_t *str, const int & len) = 0;
-virtual int frequencyQuery(const uint8_t *str, const int & len) = 0;
-virtual vector<string>  topkQuery(const int & k) = 0;
+virtual ~SketchBase(){}
+virtual void Insert(const char * str, const int & len) = 0;
+virtual int frequencyQuery(const char * str, const int & len) = 0;
+virtual std::vector<std::pair <std::string, int> > topkQuery(const int & k) = 0;
+virtual void parameterSet(const std::string& parameterName, double  parameterValue)=0;
+virtual void init() = 0;
 virtual void reset() = 0;//reset sketch to the initial state
 */
 /*----SketchBase virtual function must be finished----*/
@@ -49,7 +49,7 @@ virtual void reset() = 0;//reset sketch to the initial state
 
 class YourSketchName: public SketchBase {
 private:
-	/*----optional according to your need----*/
+    /*----optional according to your need----*/
     BOBHash *hash;//optional DSAB-builtin hashfunction
     int hash_num;
     int counter_per_array;
@@ -60,7 +60,7 @@ public:
     using SketchBase::sketch_name;//DO NOT change this declaration
     YourSketchName()
     {
-        /*constructed function MUST BT non-parameter!!!*/
+        /*constructed function MUST BE non-parameter!!!*/
         sketch_name =  "YourSketchName";//please keep sketch_name the same as class name and .h file name
     }
     void parameterSet(const std::string& parameterName, double  parameterValue)
@@ -125,12 +125,12 @@ public:
         return res;
         /*----optional according to your need----*/
     }
-    vector<string>  topkQuery(const int & k)
+    std::vector<std::pair <std::string, int> >  topkQuery(const int & k)
     {
         /*MUST have this function DO NOT change function head and parameter type */
 
         /*----optional according to your need----*/
-        vector<string> topkItem;
+        std::vector<std::pair <std::string, int> > topkItem;
         return topkItem;
         /*----optional according to your need----*/
     }

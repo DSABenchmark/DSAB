@@ -37,6 +37,19 @@ function SpinnerController($rootScope) {
 
 };
 
+function gen_popover_html(datasetList){
+    for(var i in datasetList){
+        var html = "";
+        var dataset = datasetList[i]
+        for(var key in dataset){
+            if(key != '$$hashKey' && key != 'name'){
+                html = html + '<div>' + key + ': ' + dataset[key] + '</div>';
+            }
+        }
+        dataset['html'] = html;
+    }
+}
+
 datasetController.$inject = ['requestService','metaService'];
 function datasetController(requestService, metaService){
     var $ctrl = this;
@@ -49,6 +62,7 @@ function datasetController(requestService, metaService){
         $(function(){
             $('[data-toggle="popover"]').popover()
         });
+        gen_popover_html($ctrl.datasetList);
     })
     .catch(function(error){
         console.log('Error when requesting datasetList');
@@ -125,13 +139,26 @@ function expController(requestService,metaService, $rootScope) {
 
     $ctrl.addExperiment = function(){
         var L = $ctrl.experimentList.length;
-        var lastExperiment = $ctrl.experimentList[L-1];
-        console.log(lastExperiment);
-        $ctrl.experimentList.push(deepCopy(lastExperiment));
-        // $ctrl.experimentList.push({
-        //  sketchName: "Sketch",
-        //  taskName: "Task"
-        // });
+        if(L==0){
+            $ctrl.experimentList.push({
+             sketchName: "Sketch",
+             taskName: "Task"
+            });
+        }
+        else {
+            // var lastExperiment = $ctrl.experimentList[L-1];
+            // console.log(lastExperiment);
+            // $ctrl.experimentList.push(deepCopy(lastExperiment));
+            $ctrl.experimentList.push({
+             sketchName: "Sketch",
+             taskName: "Task"
+            });
+        }
+    }
+
+    $ctrl.remove = function(idx) {
+        console.log("remove",idx);
+        $ctrl.experimentList.splice(idx, 1);
     }
 }
 
