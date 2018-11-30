@@ -146,9 +146,13 @@ function expController(requestService,metaService, $rootScope) {
             });
         }
         else {
-            var lastExperiment = $ctrl.experimentList[L-1];
-            console.log(lastExperiment);
-            $ctrl.experimentList.push(deepCopy(lastExperiment));
+            // var lastExperiment = $ctrl.experimentList[L-1];
+            // console.log(lastExperiment);
+            // $ctrl.experimentList.push(deepCopy(lastExperiment));
+            $ctrl.experimentList.push({
+             sketchName: "Sketch",
+             taskName: "Task"
+            });
         }
     }
 
