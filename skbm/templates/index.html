@@ -22,21 +22,21 @@
               <a href="index.html"><h1>Data Stream Algorithms Benchmark</h1></a>
             </div><!-- .navbar-brand -->
           </div><!-- .navbar-header -->
-          <div><a href="https://github.com/DSABenchmark/DSAB">Github</a></div>
+          <div><a href="https://github.com/DSABenchmark/DSAB" target="_blank">Github</a></div>
         </div><!-- .container -->
       </nav><!-- #header-nav -->
     </header>
     {%raw%}
     <div id="dataset-setup" class="container" ng-controller="datasetController as dsc">
       <div class="row">
-        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Please Select One or More Datasets</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#select-datasets">Help</a></span></div>
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Please Select One or More Datasets</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#select-datasets" target="_blank">Help</a></span></div>
       </div>
       <!-- <h2 class="text-center">Please Select One or More Datasets</h2> -->
       <div class="row">
         <div class="col-md-6" ng-repeat="dataset in dsc.datasetList"><button type="button" class="btn btn-light btn-lg btn-block {{dataset.state}}" ng-click="dsc.choose($index)" data-toggle="popover" data-trigger="hover" title="Dataset Info" data-html="true" data-content="{{dataset.html}}">{{ dataset.name }}</button></div>
         {%endraw%}
         <div class="col-md-6">
-          <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}">Generate A Dataset</a></button>
+          <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{{url_for('skbm.addDataset')}}" target="_blank">Generate A Dataset</a></button>
         </div>
         {%raw%}
       </div>
@@ -47,7 +47,7 @@
     {%raw%}
     <div id="grid-setup" class="container" ng-controller="expController as ec">
       <div class="row">
-        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Grid Search Experiments</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#experiments-setup">Help</a></span></div>
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Grid Search Experiments</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#experiments-setup" target="_blank">Help</a></span></div>
       </div>
       <div class="row" ng-repeat="experiment in ec.experimentList">
         <div class="col-md-12">
@@ -60,7 +60,7 @@
                 <li ng-repeat="sk in ec.sketchList"><a class="dropdown-item" ng-click="ec.writeSketchName($index,$parent.$index)">{{sk.name}}</a></li>
                 <li><div class="dropdown-divider"></div></li>
                 {%endraw%}
-                <li><a href="{{url_for('skbm.addSketch')}}" class="dropdown-item">Add Your Sketch</a></li>
+                <li><a href="{{url_for('skbm.addSketch')}}" class="dropdown-item" target="_blank">Add Your Sketch</a></li>
                 {%raw%}
               </ul>
             </div>
@@ -136,7 +136,7 @@
     {%raw%}
     <div id="graph-container" class="container" ng-controller="graphController2 as gc">
       <div class="row">
-        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Graph</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#the-graph-module">Help</a></span></div>
+        <div class="col-md-12" style="text-align: center;"><h2 style="display: inline-block;" class="text-center">Graph</h2><span class="bottom-right" style="float: right;"><a href="https://github.com/Yuol96/pku-sketch-benchmark#the-graph-module" target="_blank">Help</a></span></div>
       </div>
       <form> <!-- ng-if="gc.result" -->
         <div class="form-group">
