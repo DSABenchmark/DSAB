@@ -63,6 +63,8 @@ function datasetController(requestService, metaService){
             $('[data-toggle="popover"]').popover()
         });
         gen_popover_html($ctrl.datasetList);
+
+        $ctrl.choose(2);  // default choice
     })
     .catch(function(error){
         console.log('Error when requesting datasetList');
@@ -114,6 +116,21 @@ function expController(requestService,metaService, $rootScope) {
     promise.then(function(response){
         metaService.setSketchList(response.data);
         $ctrl.sketchList = metaService.getSketchList();
+
+        // default choices
+        $ctrl.writeSketchName(25, 0);
+        $ctrl.writeTaskName('freq', 0);
+        for(var i in $ctrl.experimentList[0].params){
+            var param = $ctrl.experimentList[0].params[i];
+            if(param.field === 'memory_in_bytes'){
+                param.from = "200000";
+                param.to = "1000000";
+                param.step = "200000";
+            }
+            else if(param.field === 'hash_num'){
+                param.from = "3";
+            }
+        }
     })
     .catch(function(error){
         console.log('Error when requesting sketchList');
@@ -124,6 +141,18 @@ function expController(requestService,metaService, $rootScope) {
     $ctrl.writeSketchName = function(sketchIdx, experimentIdx) {
         $ctrl.experimentList[experimentIdx].sketchName = $ctrl.sketchList[sketchIdx].name;
         $ctrl.experimentList[experimentIdx].chosenSketch = $ctrl.sketchList[sketchIdx];
+        // refresh params
+        var taskName = $ctrl.experimentList[experimentIdx].taskName;
+        if(taskName === 'freq' || taskName === 'topk' || taskName === 'speed'){
+            var task = $ctrl.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return taskName==task.name;})
+            $ctrl.experimentList[experimentIdx].params = $ctrl.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
+            for(var i in $ctrl.experimentList[experimentIdx].params){
+                var param = $ctrl.experimentList[experimentIdx].params[i];
+                param.from = "";
+                param.to = "";
+                param.step = "";
+            }
+        }
     };
     $ctrl.writeTaskName = function(name, experimentIdx) {
         $ctrl.experimentList[experimentIdx].taskName = name;
@@ -236,16 +265,16 @@ graphController2.$inject = ['requestService','metaService'];
 function graphController2(requestService,metaService){
     var $ctrl = this;
 
-    $ctrl.chosen_yaxis = "";
-    $ctrl.xlabel = "";
+    $ctrl.chosen_yaxis = "default";
+    $ctrl.xlabel = "X Label";
 
     $ctrl.result = metaService.getResult();
 
     $ctrl.pointList = [
         {
-            "line": "",
-            "index": "",
-            "experimentIdx": "",
+            "line": "CM",
+            "index": "1",
+            "experimentIdx": "0",
         }
     ];
 
@@ -256,13 +285,24 @@ function graphController2(requestService,metaService){
 
     $ctrl.addPoint = function() {
         var L = $ctrl.pointList.length;
-        $ctrl.pointList.push(
-            {
-                "line": $ctrl.pointList[L-1]["line"],
-                "index": $ctrl.pointList[L-1]["index"],
-                "experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
-            }
-        );
+        if($ctrl.pointList[L-1]["index"] && $ctrl.pointList[L-1]["experimentIdx"]){
+            $ctrl.pointList.push(
+                {
+                    "line": $ctrl.pointList[L-1]["line"],
+                    "index": (parseInt($ctrl.pointList[L-1]["index"]) + 1).toString(),
+                    "experimentIdx": (parseInt($ctrl.pointList[L-1]["experimentIdx"]) + 1).toString(),
+                }
+            );
+        }
+        else {
+            $ctrl.pointList.push(
+                {
+                    "line": $ctrl.pointList[L-1]["line"],
+                    "index": $ctrl.pointList[L-1]["index"],
+                    "experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
+                }
+            );
+        }
     };
 
     $ctrl.deletePoint = function() {
@@ -281,6 +321,7 @@ function graphController2(requestService,metaService){
         var promise = requestService.postGraph2(d);
         promise.then(function(response){
             $ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+            window.open($ctrl.graphLink);
         }).catch(function(error){
             console.log(error);
         });
