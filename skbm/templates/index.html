@@ -142,6 +142,7 @@
         <div class="form-group">
           <label for="exampleFormControlSelect1">Y axis</label>
           <select class="form-control" id="exampleFormControlSelect1" ng-model="gc.chosen_yaxis">
+            <option value="default" selected="selected" hidden>Please select a metric</option>
             <option ng-repeat="yaxis in gc.result.yaxis">{{yaxis}}</option>
           </select>
         </div>

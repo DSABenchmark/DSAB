@@ -141,6 +141,18 @@ function expController(requestService,metaService, $rootScope) {
     $ctrl.writeSketchName = function(sketchIdx, experimentIdx) {
         $ctrl.experimentList[experimentIdx].sketchName = $ctrl.sketchList[sketchIdx].name;
         $ctrl.experimentList[experimentIdx].chosenSketch = $ctrl.sketchList[sketchIdx];
+        // refresh params
+        var taskName = $ctrl.experimentList[experimentIdx].taskName;
+        if(taskName === 'freq' || taskName === 'topk' || taskName === 'speed'){
+            var task = $ctrl.experimentList[experimentIdx].chosenSketch.tasks.find(function(task){return taskName==task.name;})
+            $ctrl.experimentList[experimentIdx].params = $ctrl.experimentList[experimentIdx].chosenSketch.params.concat(task.params);
+            for(var i in $ctrl.experimentList[experimentIdx].params){
+                var param = $ctrl.experimentList[experimentIdx].params[i];
+                param.from = "";
+                param.to = "";
+                param.step = "";
+            }
+        }
     };
     $ctrl.writeTaskName = function(name, experimentIdx) {
         $ctrl.experimentList[experimentIdx].taskName = name;
@@ -253,16 +265,16 @@ graphController2.$inject = ['requestService','metaService'];
 function graphController2(requestService,metaService){
     var $ctrl = this;
 
-    $ctrl.chosen_yaxis = "";
-    $ctrl.xlabel = "";
+    $ctrl.chosen_yaxis = "default";
+    $ctrl.xlabel = "X Label";
 
     $ctrl.result = metaService.getResult();
 
     $ctrl.pointList = [
         {
-            "line": "",
-            "index": "",
-            "experimentIdx": "",
+            "line": "CM",
+            "index": "1",
+            "experimentIdx": "0",
         }
     ];
 
@@ -273,13 +285,24 @@ function graphController2(requestService,metaService){
 
     $ctrl.addPoint = function() {
         var L = $ctrl.pointList.length;
-        $ctrl.pointList.push(
-            {
-                "line": $ctrl.pointList[L-1]["line"],
-                "index": $ctrl.pointList[L-1]["index"],
-                "experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
-            }
-        );
+        if($ctrl.pointList[L-1]["index"] && $ctrl.pointList[L-1]["experimentIdx"]){
+            $ctrl.pointList.push(
+                {
+                    "line": $ctrl.pointList[L-1]["line"],
+                    "index": (parseInt($ctrl.pointList[L-1]["index"]) + 1).toString(),
+                    "experimentIdx": (parseInt($ctrl.pointList[L-1]["experimentIdx"]) + 1).toString(),
+                }
+            );
+        }
+        else {
+            $ctrl.pointList.push(
+                {
+                    "line": $ctrl.pointList[L-1]["line"],
+                    "index": $ctrl.pointList[L-1]["index"],
+                    "experimentIdx": $ctrl.pointList[L-1]["experimentIdx"],
+                }
+            );
+        }
     };
 
     $ctrl.deletePoint = function() {
