@@ -63,6 +63,8 @@ function datasetController(requestService, metaService){
             $('[data-toggle="popover"]').popover()
         });
         gen_popover_html($ctrl.datasetList);
+
+        $ctrl.choose(2);  // default choice
     })
     .catch(function(error){
         console.log('Error when requesting datasetList');
@@ -114,6 +116,21 @@ function expController(requestService,metaService, $rootScope) {
     promise.then(function(response){
         metaService.setSketchList(response.data);
         $ctrl.sketchList = metaService.getSketchList();
+
+        // default choices
+        $ctrl.writeSketchName(25, 0);
+        $ctrl.writeTaskName('freq', 0);
+        for(var i in $ctrl.experimentList[0].params){
+            var param = $ctrl.experimentList[0].params[i];
+            if(param.field === 'memory_in_bytes'){
+                param.from = "200000";
+                param.to = "1000000";
+                param.step = "200000";
+            }
+            else if(param.field === 'hash_num'){
+                param.from = "3";
+            }
+        }
     })
     .catch(function(error){
         console.log('Error when requesting sketchList');
