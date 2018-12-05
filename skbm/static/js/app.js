@@ -321,6 +321,7 @@ function graphController2(requestService,metaService){
         var promise = requestService.postGraph2(d);
         promise.then(function(response){
             $ctrl.graphLink = "http://"+document.location.host+"/skbm/graph?uuid="+response.data;
+            window.open($ctrl.graphLink);
         }).catch(function(error){
             console.log(error);
         });
